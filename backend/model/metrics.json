@@ -1,0 +1,15 @@
+{
+  "treinado_em": "2026-11-08T13:58:37.007Z",
+  "segundos": 65,
+  "amostras_sinteticas": 15000,
+  "feedbacks": 0,
+  "epocas": 40,
+  "perda_final": 0.9017,
+  "concordancia_com_regras": {
+    "amostras": 1500,
+    "programa_top1": 0.789,
+    "programa_top3": 0.981,
+    "volume": 0.975,
+    "intensidade": 0.98
+  }
+}

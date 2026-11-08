@@ -1,0 +1,21 @@
+{
+  "name": "diario-abcdef-coach",
+  "version": "1.0.0",
+  "description": "Backend de recomendação de treinos e substituição de exercícios com TensorFlow.js para o Diário ABCDEF",
+  "main": "src/server.js",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "train": "node scripts/train.js",
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "4.22.0",
+    "express": "4.21.2"
+  },
+  "optionalDependencies": {
+    "@tensorflow/tfjs-node": "4.22.0"
+  }
+}
