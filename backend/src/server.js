@@ -62,6 +62,28 @@ app.use((req, res, next) => {
 });
 const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res)).catch(next);
 
+const ROUTES = [
+  ["GET", "/health", "Estado do servidor e métricas do modelo"],
+  ["GET", "/api/limitations", "Limitações cobertas"],
+  ["GET", "/api/exercises?q=&muscle=", "Base de exercícios"],
+  ["POST", "/api/recommend", "Recomenda programa, volume e intensidade"],
+  ["POST", "/api/substitutions", "Alternativas para um exercício"],
+  ["POST", "/api/check", "Confere uma sessão contra as limitações"],
+  ["POST", "/api/feedback", "Registra a escolha do usuário"],
+  ["POST", "/api/train", "Retreina o modelo (x-admin-token)"],
+  ["GET", "/api/model/weights", "Pesos atuais do modelo"]
+];
+app.get("/", (req, res) => {
+  if (!(req.get("accept") || "").includes("text/html")) return res.json({ nome: "Diário ABCDEF · Coach", versao: core.VERSION, backend, modelo: !!state.model, rotas: ROUTES.map(([m, p, d]) => ({ metodo: m, rota: p, descricao: d })) });
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const m = state.metrics && state.metrics.concordancia_com_regras;
+  res.type("html").send(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diário ABCDEF · Coach</title>
+<style>body{margin:0;background:#111112;color:#fff;font:15px/1.5 system-ui,sans-serif}main{max-width:760px;margin:0 auto;padding:32px 20px}h1{margin:0 0 4px;font-size:28px}p{color:#9b9ba1}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{text-align:left;padding:10px 8px;border-bottom:1px solid #2e2e32;vertical-align:top}th{color:#9b9ba1;font-size:12px}code{color:#3dd47a}.m{font-weight:700;color:#d9d9de}</style></head>
+<body><main><h1>Diário ABCDEF · Coach</h1><p>API no ar · TensorFlow: ${esc(backend)} · modelo ${state.model ? "carregado" : "treinando"}${m ? ` · concordância com as regras: ${Math.round(m.programa_top1 * 100)}% (1ª opção), ${Math.round(m.programa_top3 * 100)}% (top 3)` : ""}</p>
+<table><thead><tr><th>Método</th><th>Rota</th><th>Descrição</th></tr></thead><tbody>${ROUTES.map(([mt, p, d]) => `<tr><td class="m">${mt}</td><td>${mt === "GET" && !p.includes("?") ? `<a href="${esc(p)}" style="color:#3dd47a">${esc(p)}</a>` : `<code>${esc(p)}</code>`}</td><td>${esc(d)}</td></tr>`).join("")}</tbody></table>
+<p>Exemplos de chamada no README do backend.</p></main></body></html>`);
+});
+
 app.get("/health", (req, res) => res.json({ ok: true, backend, modelo: !!state.model, treinando: state.training, versao: core.VERSION, metricas: state.metrics }));
 
 app.get("/api/limitations", (req, res) => res.json(core.LIMITATIONS));
@@ -150,6 +172,9 @@ async function start(port) {
 }
 if (require.main === module) {
   const port = +(process.env.PORT || 3000);
-  start(port).then(() => console.log(`API do Diário ABCDEF em http://localhost:${port} (${backend})`)).catch(e => { console.error(e); process.exit(1); });
+  start(port).then(() => {
+    console.log(`API do Diário ABCDEF em http://localhost:${port} (TensorFlow: ${backend})`);
+    console.log("Rotas: " + ROUTES.map(r => r[0] + " " + r[1].split("?")[0]).join(" · "));
+  }).catch(e => { console.error(e); process.exit(1); });
 }
 module.exports = { app, start, state };

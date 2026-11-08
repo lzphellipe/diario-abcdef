@@ -38,7 +38,7 @@ O resultado é uma sugestão. Ele não substitui um treinador, e as limitações
 npm install            # instala express e @tensorflow/tfjs (puro JS)
 npm run train          # treina e grava model/weights.json (cerca de 1 min)
 npm start              # API em http://localhost:3000
-npm test               # 16 testes (núcleo e API), funciona no Windows, Linux e macOS
+npm test               # 17 testes (núcleo e API), funciona no Windows, Linux e macOS
 ```
 
 Para treinar mais rápido, instale o backend nativo: `npm install @tensorflow/tfjs-node`. O servidor usa ele automaticamente quando está disponível.
@@ -50,7 +50,7 @@ docker build -t diario-coach .
 docker run -p 3000:3000 -e CORS_ORIGIN=https://seu-dominio -e ADMIN_TOKEN=troque-isto diario-coach
 ```
 
-Variáveis: `PORT` (padrão 3000), `CORS_ORIGIN` (padrão `*`), `ADMIN_TOKEN` (libera `POST /api/train`), `EPOCHS` e `SAMPLES` (no `npm run train`).
+Variáveis: `PORT` (padrão 3000), `CORS_ORIGIN` (padrão `*`), `ADMIN_TOKEN` (libera `POST /api/train`), `TF_DEBUG=1` (mostra os avisos do TensorFlow.js), `EPOCHS` e `SAMPLES` (no `npm run train`).
 
 ## API
 
@@ -89,6 +89,7 @@ Diz quais exercícios da sessão conflitam com as limitações e dá 3 sugestõe
 
 ### Outras rotas
 
+- `GET /`: página com as rotas (no navegador) ou a lista em JSON.
 - `GET /health`: estado, backend do TensorFlow e métricas do último treino.
 - `GET /api/limitations`: limitações e orientações.
 - `GET /api/exercises?q=remada&muscle=Costas`: base de exercícios.

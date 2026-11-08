@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const core = require("../src/core/coach-core");
-const tf = require("@tensorflow/tfjs");
+const { tf } = require("../src/tf");
 
 test("toda a base tem músculo, padrão e equipamento válidos", () => {
   for (const e of core.EXERCISES) {

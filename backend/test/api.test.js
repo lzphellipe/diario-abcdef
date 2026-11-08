@@ -7,6 +7,13 @@ test.before(async () => { srv = await start(0); base = `http://127.0.0.1:${srv.a
 test.after(() => srv && srv.close());
 const post = (p, body) => fetch(base + p, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
+test("GET / lista as rotas (JSON e HTML)", async () => {
+  const j = await (await fetch(base + "/")).json();
+  assert.ok(j.rotas.some(r => r.rota === "/api/recommend"));
+  const h = await (await fetch(base + "/", { headers: { accept: "text/html" } })).text();
+  assert.ok(h.includes("Diário ABCDEF · Coach"));
+});
+
 test("GET /health", async () => {
   const r = await fetch(base + "/health"); const j = await r.json();
   assert.equal(r.status, 200); assert.equal(j.modelo, true);
