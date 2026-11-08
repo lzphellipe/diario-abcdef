@@ -38,7 +38,7 @@ O resultado é uma sugestão. Ele não substitui um treinador, e as limitações
 npm install            # instala express e @tensorflow/tfjs (puro JS)
 npm run train          # treina e grava model/weights.json (cerca de 1 min)
 npm start              # API em http://localhost:3000
-npm test               # 16 testes (núcleo e API)
+npm test               # 16 testes (núcleo e API), funciona no Windows, Linux e macOS
 ```
 
 Para treinar mais rápido, instale o backend nativo: `npm install @tensorflow/tfjs-node`. O servidor usa ele automaticamente quando está disponível.

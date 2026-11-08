@@ -9,7 +9,7 @@
   "scripts": {
     "train": "node scripts/train.js",
     "start": "node src/server.js",
-    "test": "node --test test/*.test.js"
+    "test": "node --test"
   },
   "dependencies": {
     "@tensorflow/tfjs": "4.22.0",
