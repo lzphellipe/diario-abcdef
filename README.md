@@ -6,7 +6,7 @@ O projeto tem duas partes que compartilham o mesmo núcleo de IA:
 
 | Parte | O que é |
 | --- | --- |
-| `app/` | App web em um único HTML, sem servidor. Funciona aberto no navegador ou publicado como artefato no Claude. |
+| `app/` | App web em um único HTML, sem servidor. Sai em três versões: app instalável (GitHub Pages, login com Google), artefato no Claude e página simples para o navegador. |
 | `backend/` | API em Node.js + Express + TensorFlow.js para recomendação de treinos e substituição de exercícios por limitação. |
 
 ## Funcionalidades do app
@@ -22,13 +22,41 @@ O projeto tem duas partes que compartilham o mesmo núcleo de IA:
 - **Exames e colaterais:** envio de laudos com leitura dos valores, tabela com referência e situação, relato de efeitos colaterais e resumo com perguntas para a consulta.
 - **Treinador:** perguntas respondidas pelo Claude com o histórico como contexto.
 
-Recursos que dependem do Claude (sincronização entre aparelhos, envio de arquivos, leitura de laudos, exportação e treinador) aparecem só quando o app é aberto como artefato no Claude. Aberto direto no navegador, o app salva os dados no próprio navegador (`localStorage`) e esconde esses recursos.
+## Versões do app
+
+| Versão | Onde | Conta | Onde ficam os dados |
+| --- | --- | --- | --- |
+| **App instalável** | https://lzphellipe.github.io/diario-abcdef/ | Google | Só no celular (`localStorage` + IndexedDB) |
+| **Artefato no Claude** | claude.ai | Conta do Claude | Sincronizado pelo Claude entre aparelhos |
+| **Página simples** | `app/dist/index.html` | Nenhuma | No navegador, sem fotos nem laudos |
+
+### App instalável (PWA)
+
+- **Login com Google** (Google Identity Services). O login só identifica a pessoa neste aparelho: não há servidor, e cada conta Google tem seus dados separados no mesmo celular.
+- **Cadastro no primeiro uso:** nome completo, idade, peso e altura, com confirmação de que os dados ficam no aparelho. Idade e altura vão para a nutrição; o peso entra no histórico corporal. Editável depois em *Minha conta* (avatar no topo).
+- **Dados no celular:** registros em `localStorage`; fotos e laudos em IndexedDB, servidos pelo service worker. O app pede armazenamento persistente ao navegador.
+- **Offline:** o service worker guarda o app, as fontes e o TensorFlow.js depois do primeiro acesso.
+- **Backup:** exportar e importar um arquivo `.json` com dados, cadastro e arquivos; apagar tudo do aparelho.
+- **Instalar:** no Android, menu do Chrome > *Instalar app*; no iPhone, Safari > Compartilhar > *Adicionar à Tela de Início*.
+
+Leitura automática de laudos e o treinador dependem do Claude e aparecem só no artefato. No app instalável, os laudos são guardados e os valores são digitados na tabela de exames.
+
+#### Configurar o login com Google
+
+1. Em https://console.cloud.google.com/apis/credentials, crie um projeto e configure a *Tela de consentimento OAuth* (tipo Externo, escopos padrão `openid`, `email`, `profile`).
+2. *Criar credenciais > ID do cliente OAuth > Aplicativo da Web*.
+3. Em *Origens JavaScript autorizadas*, adicione `https://lzphellipe.github.io` e, para testar no computador, `http://localhost:8080`. Não é preciso URI de redirecionamento.
+4. Copie o Client ID para `app/pwa/config.js` (`googleClientId`), rode `node scripts/build-app.js` e faça o push. O Client ID não é segredo.
+
+Sem Client ID, o app mostra o aviso de configuração; em `localhost` aparece também o botão *Entrar em modo de teste*.
 
 ## Estrutura
 
 ```
 app/
   src/index.html          código-fonte do app (com marcadores para o núcleo de IA)
+  pwa/                    camada do app instalável: login, cadastro, service worker, manifesto, ícones, config.js
+  dist/pwa/               app instalável gerado (publicado no GitHub Pages)
   dist/index.html         app pronto para abrir no navegador
   dist/artifact.html      mesmo app, só o corpo, para publicar como artefato
 backend/
@@ -37,7 +65,8 @@ backend/
   model/weights.json      modelo treinado
   test/                   testes (node:test)
 scripts/build-app.js      gera app/dist a partir de app/src + núcleo + pesos
-.github/workflows/ci.yml  testes e verificação do app gerado
+.github/workflows/ci.yml     testes e verificação do app gerado
+.github/workflows/pages.yml  publica app/dist/pwa no GitHub Pages a cada push na main
 ```
 
 ## Como rodar
@@ -46,7 +75,10 @@ App:
 
 ```bash
 node scripts/build-app.js     # gera app/dist
-open app/dist/index.html      # ou sirva a pasta com qualquer servidor estático
+open app/dist/index.html      # página simples
+
+# app instalável (service worker exige http, não file://)
+cd app/dist/pwa && python3 -m http.server 8080   # http://localhost:8080
 ```
 
 Backend:
@@ -65,6 +97,7 @@ Detalhes da API, do treino do modelo e do Docker em [`backend/README.md`](backen
 1. Alterou o núcleo de IA (`backend/src/core/coach-core.js`) ou as regras do professor? Rode `npm run train` em `backend/` para atualizar `model/weights.json`.
 2. Rode `node scripts/build-app.js` para levar núcleo e pesos para o app.
 3. A CI roda os testes e falha se `app/dist` estiver desatualizado.
+4. No push para a `main`, o workflow *Publicar app* coloca a nova versão no GitHub Pages. Ao mudar arquivos do app instalável, aumente `VERSION` em `app/pwa/sw.js` para renovar o cache.
 
 ## Aviso
 

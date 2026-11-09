@@ -50,6 +50,20 @@ main{padding-block:28px 190px}
 .chip.off{opacity:.45;text-decoration:line-through}
 .chip.sec{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--muted)}
 
+/* conta */
+.hellorow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.avatar{flex:none;width:46px;height:46px;border-radius:50%;border:0;padding:0;background:var(--raised);color:var(--ink);font-weight:900;font-size:18px;cursor:pointer;overflow:hidden;display:grid;place-items:center}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.acct{display:grid;gap:14px}
+.acct .who{display:flex;gap:12px;align-items:center}
+.acct .who .avatar{width:56px;height:56px;cursor:default}
+.acct .who b{display:block;font-size:18px}
+.acct dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.acct dl div{background:var(--raised);border-radius:12px;padding:10px 12px}
+.acct dt{font-size:12px;color:var(--muted)} .acct dd{margin:0;font-weight:900;font-size:19px;font-variant-numeric:tabular-nums}
+.acct .list{display:grid;gap:8px}
+.acct .list .btn{width:100%;justify-content:flex-start;text-align:left}
+
 /* semana */
 .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 .wdcol{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
@@ -401,7 +415,7 @@ details summary{cursor:pointer}
 
 <main class="wrap">
   <section id="v-inicio">
-    <h1 class="hello" id="hello">Olá</h1>
+    <div class="hellorow"><h1 class="hello" id="hello">Olá</h1><button type="button" class="avatar" id="acct" hidden aria-label="Minha conta"></button></div>
     <p class="tagline" id="tagline"></p>
     <span class="status" id="status" aria-live="polite">Carregando</span>
     <div id="alert"></div>
@@ -508,6 +522,7 @@ details summary{cursor:pointer}
   <a href="#mesociclo" id="tab-mesociclo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3a1 1 0 0 1 1 1v2a5 5 0 0 1-4.3 5 5 5 0 0 1-3.7 3.4V19h3v2H8v-2h3v-2.6A5 5 0 0 1 7.3 13 5 5 0 0 1 3 8V6a1 1 0 0 1 1-1h3Zm10 4v3.8A3 3 0 0 0 19 8V7ZM5 7v1a3 3 0 0 0 2 2.8V7Z"/></svg><span>Mesociclo</span></a>
 </nav>
 
+<!--@@HOST@@-->
 <script>
 /*@@COACH_CORE@@*/
 </script>
@@ -771,6 +786,7 @@ const mmss=s=>Math.floor(s/60)+":"+pad(s%60);
 const sid=(date,prog,k)=>prog==="abcdef"?"s-"+date+"-"+k:"s-"+date+"-"+prog+"-"+k;
 const clone=o=>JSON.parse(JSON.stringify(o));
 const blankSession=(date,prog,k,week)=>({kind:"session",date,prog,day:k,week,sets:{},updatedAt:null});
+const blobUrl=id=>window.DiarioHost&&window.DiarioHost.blobUrl?window.DiarioHost.blobUrl(id):"/_blob/"+id;
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 const notesHave=n=>n&&((n.sleep!=null&&n.sleep!=="")||n.energy||(n.pain&&n.pain.trim())||(n.text&&n.text.trim()));
 const setsHave=s=>s&&s.sets&&Object.values(s.sets).some(a=>a.some(x=>x&&(x.kg!=null||x.reps!=null||x.done)));
@@ -806,8 +822,8 @@ function registerCustom(list){
 }
 
 /* ---------- Armazenamento ---------- */
-function localStore(){
-  const KEY="diario-abcdef-v1";
+function localStore(key){
+  const KEY=key||"diario-abcdef-v1";
   let mem={sessions:{},settings:{week:1},docs:{}};
   try{const raw=localStorage.getItem(KEY);if(raw)mem=Object.assign(mem,JSON.parse(raw))}catch(e){}
   mem.docs=mem.docs||{};mem.sessions=mem.sessions||{};
@@ -1287,7 +1303,7 @@ function weightChart(pts){
 }
 function photoFigs(b){
   const ph=(b&&b.photos)||{};
-  return`<div class="photos">${[["front","Frente"],["side","Lado"],["back","Costas"]].map(([k,n])=>`<figure>${ph[k]?`<img src="/_blob/${esc(ph[k])}" alt="${n}, ${fmtShort(b.date)}" loading="lazy">`:`<div class="ph"></div>`}<figcaption>${n}</figcaption></figure>`).join("")}</div>`;
+  return`<div class="photos">${[["front","Frente"],["side","Lado"],["back","Costas"]].map(([k,n])=>`<figure>${ph[k]?`<img src="${esc(blobUrl(ph[k]))}" alt="${n}, ${fmtShort(b.date)}" loading="lazy">`:`<div class="ph"></div>`}<figcaption>${n}</figcaption></figure>`).join("")}</div>`;
 }
 function evCorpo(){
   if(!S.bodyDraft)S.bodyDraft={date:todayISO(),weight:"",waist:"",chest:"",arm:"",thigh:""};
@@ -1735,7 +1751,7 @@ async function saveExamDraft(){
 function openExamView(x){
   S.sheetMode="examview";S.examView=x.id;
   const rs=x.results||[];
-  openSheet(`${x.type} · ${fmtShort(x.date)}`,`${(x.files||[]).length?`<div class="files">${x.files.map(f=>f.type==="pdf"?`<a class="btn raised" href="/_blob/${esc(f.id)}" target="_blank" rel="noopener">Abrir PDF${f.name?" · "+esc(f.name):""}</a>`:`<a href="/_blob/${esc(f.id)}" target="_blank" rel="noopener"><img src="/_blob/${esc(f.id)}" alt="Página do laudo" loading="lazy"></a>`).join("")}</div>`:""}
+  openSheet(`${x.type} · ${fmtShort(x.date)}`,`${(x.files||[]).length?`<div class="files">${x.files.map(f=>f.type==="pdf"?`<a class="btn raised" href="${esc(blobUrl(f.id))}" target="_blank" rel="noopener">Abrir PDF${f.name?" · "+esc(f.name):""}</a>`:`<a href="${esc(blobUrl(f.id))}" target="_blank" rel="noopener"><img src="${esc(blobUrl(f.id))}" alt="Página do laudo" loading="lazy"></a>`).join("")}</div>`:""}
     ${rs.length?`<div class="sumline">${["high","low","ok"].map(k=>{const n=rs.filter(r=>flagOf(r).st===k).length;return n?`<span class="chip ${FLAGL[k][1]}">${n} ${FLAGL[k][0].toLowerCase()}</span>`:""}).join("")}</div><div class="tblwrap" style="margin-top:10px"><table class="vtable"><thead><tr><th>Exame</th><th class="r">Resultado</th><th>Valores de referência</th><th>Situação</th></tr></thead><tbody>${rs.slice().sort((a,b)=>{const o={high:0,low:1,na:2,ok:3};return o[flagOf(a).st]-o[flagOf(b).st]}).map(r=>{const f=flagOf(r);const ref=r.refText?esc(r.refText):(f.min!=null||f.max!=null?`${refTxt(f)} ${esc(r.unit||"")}${f.src==="geral"?" *":""}`:"—");return`<tr><td style="white-space:normal;min-width:130px"><b>${esc(r.name)}</b>${f.note&&f.st!=="ok"?`<br><span class="muted" style="font-size:12px">${esc(f.note)}</span>`:""}</td><td class="r"${f.st==="high"||f.st==="low"?' style="font-weight:900"':""}>${esc(r.value)} <span class="muted">${esc(r.unit||"")}</span></td><td class="refcell">${ref}</td><td><span class="chip ${FLAGL[f.st][1]}">${FLAGL[f.st][0]}</span></td></tr>`}).join("")}</tbody></table></div><p class="muted">Valores fora da referência não são diagnóstico: o médico interpreta junto com o seu caso.${rs.some(r=>flagOf(r).src==="geral")?" * Referência geral aproximada.":""}</p>`:`<p class="muted">Sem valores registrados.</p>`}
     ${x.notes?`<p style="margin:12px 0 0">${esc(x.notes)}</p>`:""}
     <div class="dactions" style="margin-top:14px"><button type="button" class="btn light" data-examedit="${x.id}">Editar</button></div>`);
@@ -2180,6 +2196,24 @@ evol.addEventListener("change",e=>{const k=e.target.dataset.photo;if(k){S.bodyFi
 $("#weeks").addEventListener("click",async e=>{const b=e.target.closest("[data-week]");if(!b)return;S.week=Number(b.dataset.week);renderMeso();renderHome();await saveSettings()});
 
 /* ---------- Eventos: painel ---------- */
+$("#acct").addEventListener("click",()=>{if(HOST)openAccount()});
+$("#sheet-body").addEventListener("click",async e=>{
+  const a=e.target.closest("[data-acct]");if(!a||S.sheetMode!=="account"||a.tagName==="INPUT")return;
+  const err=$("#acct-err"),k=a.dataset.acct;
+  try{
+    if(k==="edit"){closeSheet();const pf=await HOST.editProfile();if(pf){renderAccount();await applyHostProfile(pf,true);toast("Cadastro atualizado")}}
+    if(k==="export"){a.disabled=true;a.textContent="Gerando backup…";const r=await HOST.exportBackup();a.disabled=false;a.textContent="Exportar backup";toast(`Backup gerado${r.files?` com ${r.files} arquivo(s)`:""}`)}
+    if(k==="out")HOST.signOut();
+    if(k==="askdel")acctConfirm("del");
+    if(k==="no"){$("#acct-confirm").innerHTML="";S.pendingImport=null}
+    if(k==="del"){if(S.dirty){clearTimeout(saveTimer)}await HOST.deleteAll()}
+    if(k==="doimport"&&S.pendingImport){a.disabled=true;a.textContent="Restaurando…";await HOST.importBackup(S.pendingImport)}
+  }catch(x){if(err)err.textContent=x&&x.message?x.message:"Não foi possível concluir.";a.disabled=false}
+});
+$("#sheet-body").addEventListener("change",e=>{
+  if(S.sheetMode!=="account"||e.target.dataset.acct!=="import")return;
+  const f=e.target.files&&e.target.files[0];if(f)acctConfirm("import",f);e.target.value="";
+});
 $("#sheet-close").addEventListener("click",closeSheet);
 $("#backdrop").addEventListener("click",closeSheet);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
@@ -2261,12 +2295,56 @@ function afterData(){
   if(busy()){S.pendingRender=true;return}
   renderHome();renderView(currentView());
 }
-function useLocal(){
-  const st=localStore();S.store=st;ingest(st.entries());
+function useLocal(key){
+  const st=localStore(key);S.store=st;ingest(st.entries());
   if(S.dirty)flush();
   setStatus("Salvo neste aparelho","ok");afterData();
 }
+/* ---------- Versão instalável: conta, cadastro e backup ---------- */
+const HOST=window.DiarioHost||null;
+const firstName=n=>String(n||"").trim().split(/\s+/)[0]||"";
+function renderAccount(){
+  const b=$("#acct");if(!HOST||!HOST.user){b.hidden=true;return}
+  const u=HOST.user,pf=HOST.profile||{};
+  b.hidden=false;b.innerHTML=u.picture?`<img src="${esc(u.picture)}" alt="" referrerpolicy="no-referrer">`:esc(firstName(pf.name||u.name).charAt(0).toUpperCase()||"?");
+}
+async function applyHostProfile(pf,isUpdate){
+  if(!pf)return;
+  S.first=firstName(pf.name);
+  const N=S.nutri;let changed=false;
+  if(isUpdate||!N.age){N.age=String(pf.age);changed=true}
+  if(isUpdate||!N.height){N.height=String(pf.height);changed=true}
+  const lw=latestWeight();
+  if(lw==null||(isUpdate&&Math.abs(lw-pf.weight)>.05)){
+    const date=todayISO(),id="b-"+date,old=S.bodies[id]||{};
+    const body=Object.assign({kind:"body",date,photos:{}},old,{weight:pf.weight,updatedAt:new Date().toISOString()});
+    try{await S.store.set(id,body);S.bodies[id]=body}catch(e){}
+  }
+  if(changed)await saveSettings();
+  renderHome();renderView(currentView());
+}
+function openAccount(){
+  const u=HOST.user,pf=HOST.profile||{};S.sheetMode="account";
+  openSheet("Minha conta",`<div class="acct"><div class="who"><span class="avatar">${u.picture?`<img src="${esc(u.picture)}" alt="" referrerpolicy="no-referrer">`:esc(firstName(pf.name).charAt(0))}</span><div style="min-width:0"><b>${esc(pf.name||u.name)}</b><span class="muted">${esc(u.email||"")}</span></div></div>
+    <dl><div><dt>Idade</dt><dd>${esc(pf.age)}</dd></div><div><dt>Altura</dt><dd>${esc(pf.height)} cm</dd></div><div><dt>Peso no cadastro</dt><dd>${esc(fmtNum(pf.weight))} kg</dd></div></dl>
+    <p class="muted" style="margin:0">Seus dados ficam só neste aparelho. Faça backup antes de trocar de celular ou limpar o navegador.</p>
+    <div class="list"><button type="button" class="btn raised" data-acct="edit">Editar cadastro</button><button type="button" class="btn raised" data-acct="export">Exportar backup</button><label class="btn raised" style="display:flex;align-items:center;cursor:pointer">Importar backup<input type="file" accept="application/json,.json" data-acct="import" hidden></label><button type="button" class="btn raised" data-acct="out">Sair</button><button type="button" class="btn danger" data-acct="askdel">Apagar todos os meus dados</button></div>
+    <div id="acct-confirm"></div><p class="err" id="acct-err"></p></div>`);
+}
+function acctConfirm(kind,payload){
+  const box=$("#acct-confirm");if(!box)return;
+  const txt=kind==="del"?"Apagar todos os seus treinos, medidas, fotos, exames e cadastro deste aparelho? Isso não pode ser desfeito; exporte um backup antes se quiser guardar.":"Substituir todos os dados deste aparelho pelo backup? Os dados atuais serão apagados.";
+  box.innerHTML=`<div class="note-box" style="display:grid;gap:10px;${kind==="del"?"background:rgba(255,107,107,.14)":""}"><span>${txt}</span><span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" data-acct="no">Cancelar</button><button type="button" class="btn solid" data-acct="${kind==="del"?"del":"doimport"}">${kind==="del"?"Apagar tudo":"Substituir"}</button></span></div>`;
+  S.pendingImport=payload||null;
+}
 (async function boot(){
+  if(HOST){
+    setStatus("Carregando","busy");
+    const s=await HOST.ready();
+    S.assets=HOST.assets||null;S.downloads=HOST.downloads||null;
+    useLocal(s.storageKey);renderAccount();await applyHostProfile(s.profile,false);
+    return;
+  }
   const c=window.claude;
   if(!c||typeof c.use!=="function"){useLocal();return}
   setStatus("Conectando","busy");
