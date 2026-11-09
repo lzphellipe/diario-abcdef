@@ -17,9 +17,10 @@ O projeto tem duas partes que compartilham o mesmo núcleo de IA:
 - **Ferramentas por exercício:** sugestão de carga (dupla progressão), aquecimento, calculadora de anilhas, troca de exercício e recorde pessoal.
 - **IA:** recomendação de programa, volume e intensidade a partir do perfil, das limitações e do histórico; troca automática dos exercícios que conflitam com limitações.
 - **Evolução:** 1RM estimada, volume semanal por músculo, recordes, peso, medidas e fotos, exportação em CSV.
-- **Nutrição:** metas de calorias e macros, ritmo do peso, registro diário de proteína, água e suplementos.
-- **Suplementos e hormônios:** guia por nível de evidência, conteúdo educativo sobre riscos e registro do que foi prescrito pelo médico.
-- **Exames e colaterais:** envio de laudos com leitura dos valores, tabela com referência e situação, relato de efeitos colaterais e resumo com perguntas para a consulta.
+- **Nutrição:** metas de calorias e macros, ritmo do peso, registro diário de proteína, água e suplementos; guia de suplementos por nível de evidência e registro dos prescritos.
+- **Saúde** (aba própria no menu):
+  - *Hormônios:* registro de hormônios e medicamentos como estão na receita e conteúdo educativo sobre ergogênicos e riscos.
+  - *Exames e colaterais:* laudos com tabela de valores, referência e situação; relato de efeitos colaterais; resumo com perguntas para a consulta.
 - **Treinador:** perguntas respondidas pelo Claude com o histórico como contexto.
 
 ## Versões do app

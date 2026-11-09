@@ -411,6 +411,7 @@ details summary{cursor:pointer}
   @keyframes rise{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 }
 @media (prefers-reduced-motion: reduce){.fill{transition:none}}
+@media (max-width:360px){.tabbar{left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));padding:6px}.tabbar a{padding:0 8px;min-width:38px}}
 </style>
 
 <main class="wrap">
@@ -474,6 +475,13 @@ details summary{cursor:pointer}
     <div id="nut"></div>
   </section>
 
+  <section id="v-saude" hidden>
+    <h1 class="hello">Saúde</h1>
+    <p class="lead">Hormônios, medicamentos, exames e efeitos colaterais, para acompanhar junto com o seu médico.</p>
+    <div class="pills" id="hsubtabs" role="group" aria-label="Seções de saúde" style="margin-top:16px"></div>
+    <div id="saude"></div>
+  </section>
+
   <section id="v-mesociclo" hidden>
     <h1 class="hello">Mesociclo</h1>
     <p class="lead">5 semanas de progressão e 1 de deload. No plano ABCDEF a semana também liga as técnicas aos poucos; nos outros programas ela ajusta o RIR do deload e corta as séries pela metade na semana 6. Volume e intensidade escolhidos em Ajustar treino se somam a isso.</p>
@@ -519,6 +527,7 @@ details summary{cursor:pointer}
   <a href="#programas" id="tab-programas"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="1.5" y="9" width="3" height="6" rx="1"/><rect x="4.5" y="6.5" width="3.5" height="11" rx="1.2"/><rect x="16" y="6.5" width="3.5" height="11" rx="1.2"/><rect x="19.5" y="9" width="3" height="6" rx="1"/><rect x="8" y="10.8" width="8" height="2.4" rx=".6"/></svg><span>Programas</span></a>
   <a href="#evolucao" id="tab-evolucao"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="4" y="12" width="4" height="8" rx="1.2"/><rect x="10" y="8" width="4" height="12" rx="1.2"/><rect x="16" y="4" width="4" height="16" rx="1.2"/></svg><span>Evolução</span></a>
   <a href="#nutricao" id="tab-nutricao"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 7.6c-1.2-1.6-3.6-2-5.2-1C4.6 8 4 11.3 5.2 14.8 6.4 18.4 8.6 21 10.4 21c.8 0 1-.4 1.6-.4s.8.4 1.6.4c1.8 0 4-2.6 5.2-6.2C20 11.3 19.4 8 17.2 6.6c-1.6-1-4-.6-5.2 1Z"/><path d="M12 7.5c0-2.2 1.2-3.8 3.4-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Nutrição</span></a>
+  <a href="#saude" id="tab-saude"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.6 13.4c1-1.4 1.6-2.9 1.6-4.6 0-2.9-2.2-5.2-5-5.2-1.7 0-3.2.9-4.2 2.2-1-1.3-2.5-2.2-4.2-2.2-2.8 0-5 2.3-5 5.2 0 1.2.3 2.3.8 3.3"/><path d="M5.6 16.6C8 19 12 21.2 12 21.2s2.6-1.4 5-3.4"/><path d="M2 12.2h4.4l2-3.2 3.2 6.2 2.2-3h8.2"/></svg><span>Saúde</span></a>
   <a href="#mesociclo" id="tab-mesociclo"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 3h10v2h3a1 1 0 0 1 1 1v2a5 5 0 0 1-4.3 5 5 5 0 0 1-3.7 3.4V19h3v2H8v-2h3v-2.6A5 5 0 0 1 7.3 13 5 5 0 0 1 3 8V6a1 1 0 0 1 1-1h3Zm10 4v3.8A3 3 0 0 0 19 8V7ZM5 7v1a3 3 0 0 0 2 2.8V7Z"/></svg><span>Mesociclo</span></a>
 </nav>
 
@@ -1977,8 +1986,9 @@ const SUPPS=[
 const SUPPMAP=Object.fromEntries(SUPPS.map(s=>[s.id,s]));
 const ACT=[[1.45,"Treino 3–4x, trabalho sentado"],[1.55,"Treino 5–6x, trabalho sentado"],[1.7,"Treino 5–6x, dia ativo"],[1.85,"Treino pesado diário e trabalho físico"]];
 const GOALS={ganho:{n:"Ganho",k:1.10,p:2.0,rate:[.25,.5],d:"Superávit de cerca de 10%, buscando ganhar 0,25–0,5% do peso por semana."},manut:{n:"Manutenção",k:1,p:2.0,rate:[-.25,.25],d:"Calorias de manutenção; o peso deve oscilar menos de 0,25% por semana."},corte:{n:"Corte",k:.8,p:2.4,rate:[-1,-.5],d:"Déficit de cerca de 20%, perdendo 0,5–1% do peso por semana. Proteína mais alta ajuda a preservar massa magra."}};
-const NSUBS=[["nutri","Nutrição"],["supl","Suplementos"],["horm","Ergogênicos e hormônios"],["saude","Exames e colaterais"]];
-S.nsub="nutri";S.nutri={sex:"m",age:"",height:"",weight:"",act:1.55,goal:"ganho"};S.mySupps=["creatina"];S.daily={};
+const NSUBS=[["nutri","Nutrição"],["supl","Suplementos"]];
+const HSUBS=[["horm","Hormônios"],["saude","Exames e colaterais"]];
+S.nsub="nutri";S.hsub="horm";S.nutri={sex:"m",age:"",height:"",weight:"",act:1.55,goal:"ganho"};S.mySupps=["creatina"];S.daily={};
 const fmt2=n=>Number(n).toLocaleString("pt-BR",{maximumFractionDigits:2});
 const numOf=v=>{const x=parseFloat(String(v==null?"":v).replace(",","."));return isFinite(x)?x:null};
 function latestWeight(){const b=bodyEntries().filter(x=>x.weight!=null);return b.length?b[b.length-1].weight:null}
@@ -2101,10 +2111,18 @@ const HORM_HTML=`<p class="lead">Conteúdo educativo sobre como hormônios e rec
  <div class="hsec card"><h3>Limite natural</h3>
   <p>Um estudo clássico com fisiculturistas (Kouri, 1995) encontrou índice de massa livre de gordura (FFMI) até cerca de 25 em não usuários. É uma referência aproximada, com exceções e evidência limitada; não serve para julgar ninguém, só para alinhar expectativas de progresso. Avançados naturais ganham devagar, ao longo de meses, e isso é normal.</p>
  </div>`;
-function evHorm(){$("#nut").innerHTML=medSectionHTML(["hormonio","medicamento"],"Meu acompanhamento médico","Hormônios e medicamentos prescritos pelo seu médico, como estão na receita.")+MED_NOTE+`<div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="flex:1 1 220px;min-width:0"><b>Exames, efeitos colaterais e perguntas ao médico</b><p class="muted" style="margin:2px 0 0">Envie laudos, veja os valores fora da referência, relate efeitos e gere o resumo para a consulta.</p></div><button type="button" class="btn light" data-gonsub="saude">Abrir</button></div>`+shareHTML()+`<div class="rowhead"><h2 class="h2">Guia educativo</h2></div>`+HORM_HTML}
+function evHorm(){$("#saude").innerHTML=medSectionHTML(["hormonio","medicamento"],"Meu acompanhamento médico","Hormônios e medicamentos prescritos pelo seu médico, como estão na receita.")+MED_NOTE+`<div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="flex:1 1 220px;min-width:0"><b>Exames, efeitos colaterais e perguntas ao médico</b><p class="muted" style="margin:2px 0 0">Envie laudos, veja os valores fora da referência, relate efeitos e gere o resumo para a consulta.</p></div><button type="button" class="btn light" data-gonsub="saude">Abrir</button></div>`+shareHTML()+`<div class="rowhead"><h2 class="h2">Guia educativo</h2></div>`+HORM_HTML}
+/* renderNut redesenha a tela aberta (Nutrição ou Saúde): o acompanhamento médico aparece nas duas. */
 function renderNut(){
+  if(currentView()==="saude")return renderHealth();
+  if(!NSUBS.some(x=>x[0]===S.nsub))S.nsub="nutri";
   $("#nsubtabs").innerHTML=NSUBS.map(([k,n])=>`<button type="button" class="pill" data-nsub="${k}" aria-pressed="${k===S.nsub}">${n}</button>`).join("");
-  ({nutri:evNutri,supl:evSupl,horm:evHorm,saude:evSaude})[S.nsub]();
+  ({nutri:evNutri,supl:evSupl})[S.nsub]();
+}
+function renderHealth(){
+  if(!HSUBS.some(x=>x[0]===S.hsub))S.hsub="horm";
+  $("#hsubtabs").innerHTML=HSUBS.map(([k,n])=>`<button type="button" class="pill" data-hsub="${k}" aria-pressed="${k===S.hsub}">${n}</button>`).join("");
+  ({horm:evHorm,saude:evSaude})[S.hsub]();
 }
 
 /* ---------- Acompanhamento médico (registro do usuário) ---------- */
@@ -2267,9 +2285,9 @@ function evSaude(){
   const urg=urgentItems(),ms=markers(),qs=doctorQuestions();
   const exams=Object.values(S.exams).sort((a,b)=>a.date<b.date?1:-1),t=todayISO(),next=exams.map(x=>x.next).filter(n=>n&&n>=t).sort()[0];
   const sides=Object.values(S.sides).sort((a,b)=>a.date<b.date?1:-1);
-  $("#nut").innerHTML=`${urg.length?`<div class="alert" style="background:rgba(255,107,107,.14)"><h3 style="color:var(--danger)">Procure atendimento</h3><p>Você registrou: ${esc(urg.join("; "))}. Esses sinais pedem avaliação médica imediata. Se estiver acontecendo agora, ligue 192 (SAMU) ou vá a um pronto-socorro.</p></div>`:""}
+  $("#saude").innerHTML=`${urg.length?`<div class="alert" style="background:rgba(255,107,107,.14)"><h3 style="color:var(--danger)">Procure atendimento</h3><p>Você registrou: ${esc(urg.join("; "))}. Esses sinais pedem avaliação médica imediata. Se estiver acontecendo agora, ligue 192 (SAMU) ou vá a um pronto-socorro.</p></div>`:""}
     <div class="rowhead"><h2 class="h2">Exames</h2><button type="button" class="btn light" data-examadd="1">Adicionar</button></div>
-    <p class="muted" style="margin:-6px 0 12px">Envie fotos ou o PDF do laudo. O app pode ler os valores e comparar com a referência impressa no laudo; confira sempre com o documento.</p>
+    <p class="muted" style="margin:-6px 0 12px">${S.sample?"Envie fotos ou o PDF do laudo. O app pode ler os valores e comparar com a referência impressa no laudo; confira sempre com o documento.":"Guarde fotos ou o PDF do laudo e digite os valores com a referência impressa; o app compara e sinaliza o que está fora."}</p>
     ${next?`<div class="note-box" style="background:var(--ok-soft);margin-bottom:12px"><b>Próximo retorno:</b> ${WEEKDAY[dow(next)]}, ${fmtLong(next)}</div>`:""}
     ${exams.length?`<div class="card tblcard"><div class="tblwrap"><table><thead><tr><th>Data</th><th>Tipo</th><th class="r">Valores</th><th class="r">Fora</th><th>Arquivos</th></tr></thead><tbody>${exams.map(x=>{const rs=x.results||[];const off=rs.filter(r=>{const s=flagOf(r).st;return s==="high"||s==="low"}).length;return`<tr class="click" data-examview="${x.id}" tabindex="0"><td>${fmtDate(x.date)}</td><td>${esc(x.type)}</td><td class="r">${rs.length||"—"}</td><td class="r"${off?' style="color:var(--danger);font-weight:700"':""}>${rs.length?off:"—"}</td><td>${(x.files||[]).length?(x.files||[]).length+" arquivo(s)":"—"}</td></tr>`}).join("")}</tbody></table></div></div>`:`<div class="empty">Nenhum exame registrado.</div>`}
     ${ms.length?`<div class="rowhead"><h2 class="h2">Marcadores</h2></div><div class="card tblcard"><div class="tblwrap"><table><thead><tr><th>Marcador</th><th class="r">Último</th><th>Situação</th><th class="r">Referência</th><th class="r">Anterior</th></tr></thead><tbody>${ms.map(m=>{const p=m.pts[m.pts.length-1],pv=m.pts.length>1?m.pts[m.pts.length-2]:null;return`<tr><td style="white-space:normal">${esc(p.r.name)}${p.f.note?`<br><span class="muted" style="font-size:12px">${esc(p.f.note)}</span>`:""}</td><td class="r">${esc(p.r.value)} <span class="muted">${esc(p.r.unit||"")}</span></td><td><span class="chip ${FLAGL[p.f.st][1]}">${FLAGL[p.f.st][0]}</span></td><td class="r">${refTxt(p.f)}${p.f.src==="geral"?' <span class="muted" title="Referência geral aproximada; o laudo não trazia">*</span>':""}</td><td class="r">${pv?esc(pv.r.value)+" · "+fmtShort(pv.date):"—"}</td></tr>`}).join("")}</tbody></table></div></div><p class="muted">* Referência geral aproximada para homens adultos, usada quando o laudo não trazia a dele. A do seu laboratório sempre vale mais.</p>`:""}
@@ -2595,7 +2613,7 @@ async function askCoach(q){
 }
 
 /* ---------- Navegação ---------- */
-const VIEWS=["inicio","programas","programa","criar","evolucao","nutricao","mesociclo"];
+const VIEWS=["inicio","programas","programa","criar","evolucao","nutricao","saude","mesociclo"];
 function currentView(){let h=location.hash.slice(1);if(h.startsWith("prog-")){S.detail=h.slice(5);return"programa"}return VIEWS.includes(h)?h:"inicio"}
 function renderView(h){
   if(h==="programas")renderPrograms();
@@ -2603,6 +2621,7 @@ function renderView(h){
   if(h==="criar")renderBuilder();
   if(h==="evolucao")renderEvol();
   if(h==="nutricao")renderNut();
+  if(h==="saude")renderHealth();
   if(h==="mesociclo")renderMeso();
 }
 function route(){
@@ -2611,7 +2630,7 @@ function route(){
   if(h==="criar"&&!S.build){location.hash="#programas";return}
   VIEWS.forEach(v=>{$("#v-"+v).hidden=v!==h});
   const tab=(h==="programa"||h==="criar")?"programas":h;
-  ["inicio","programas","evolucao","nutricao","mesociclo"].forEach(v=>{const a=$("#tab-"+v);if(v===tab)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  ["inicio","programas","evolucao","nutricao","saude","mesociclo"].forEach(v=>{const a=$("#tab-"+v);if(v===tab)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   renderView(h);closeSheet();window.scrollTo(0,0);
 }
 function openSession(date,k){
@@ -2745,11 +2764,12 @@ bld.addEventListener("click",e=>{
 });
 $("#subtabs").addEventListener("click",e=>{const b=e.target.closest("[data-sub]");if(b){S.sub=b.dataset.sub;renderEvol()}});
 $("#nsubtabs").addEventListener("click",e=>{const b=e.target.closest("[data-nsub]");if(b){S.nsub=b.dataset.nsub;renderNut()}});
-const nutEl=$("#nut");
+$("#hsubtabs").addEventListener("click",e=>{const b=e.target.closest("[data-hsub]");if(b){S.hsub=b.dataset.hsub;renderHealth()}});
+const onNut=(type,fn)=>[$("#nut"),$("#saude")].forEach(el=>el.addEventListener(type,fn));
 function nutriChanged(){const o=$("#nu-out");if(o)o.innerHTML=nutriResultsHTML();clearTimeout(nutriTimer);nutriTimer=setTimeout(()=>{nutriTimer=null;saveSettings()},800)}
-nutEl.addEventListener("keydown",e=>{const r=e.target.closest("[data-examview]");if(r&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openExamView(S.exams[r.dataset.examview])}});
-nutEl.addEventListener("input",e=>{const k=e.target.dataset.n;if(!k)return;S.nutri[k]=k==="act"?+e.target.value:e.target.value;nutriChanged()});
-nutEl.addEventListener("click",e=>{
+onNut("keydown",e=>{const r=e.target.closest("[data-examview]");if(r&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openExamView(S.exams[r.dataset.examview])}});
+onNut("input",e=>{const k=e.target.dataset.n;if(!k)return;S.nutri[k]=k==="act"?+e.target.value:e.target.value;nutriChanged()});
+onNut("click",e=>{
   const g=e.target.closest("[data-goal]");if(g){S.nutri.goal=g.dataset.goal;g.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b===g)));nutriChanged();return}
   const ms=e.target.closest("[data-mysupp]");if(ms){const id=ms.dataset.mysupp;S.mySupps=S.mySupps.includes(id)?S.mySupps.filter(x=>x!==id):S.mySupps.concat(id);const on=S.mySupps.includes(id);ms.setAttribute("aria-pressed",String(on));ms.textContent=on?"Uso ✓":"Uso";saveSettings();return}
   const ma=e.target.closest("[data-medact]");if(ma){medAction(ma.dataset.medact,ma.dataset.id);return}
@@ -2758,7 +2778,7 @@ nutEl.addEventListener("click",e=>{
   const ev=e.target.closest("[data-examview]");if(ev){openExamView(S.exams[ev.dataset.examview]);return}
   if(e.target.closest("[data-sideadd]")){openSideForm(null);return}
   const se=e.target.closest("[data-sideedit]");if(se){openSideForm(S.sides[se.dataset.sideedit]);return}
-  const gs=e.target.closest("[data-gonsub]");if(gs){S.nsub=gs.dataset.gonsub;renderNut();window.scrollTo(0,0);return}
+  const gs=e.target.closest("[data-gonsub]");if(gs){const k=gs.dataset.gonsub,health=HSUBS.some(x=>x[0]===k),view=health?"saude":"nutricao";if(health)S.hsub=k;else S.nsub=k;if(currentView()!==view)location.hash="#"+view;else{renderNut();window.scrollTo(0,0)}return}
   const rp=e.target.closest("[data-report]");if(rp){const txt=doctorReport();
     if(rp.dataset.report==="save"){if(S.downloads)S.downloads.save({filename:"resumo-consulta.txt",data:txt}).catch(er=>{if(er&&er.code!=="declined")toast("Não foi possível baixar agora")});return}
     const fallback=()=>{S.sheetMode="report";openSheet("Resumo da consulta",`<p class="muted" style="margin:0 0 8px">Selecione e copie o texto abaixo.</p><textarea id="rep-text" style="width:100%;min-height:50vh;border:0;border-radius:12px;background:var(--raised);padding:12px;font-size:14px" readonly></textarea>`);const t=$("#rep-text");t.value=txt;t.focus();t.select()};
