@@ -24,6 +24,8 @@ O projeto tem duas partes que compartilham o mesmo núcleo de IA:
 - **IA:** recomendação de programa, volume e intensidade a partir do perfil, das limitações e do histórico; troca automática dos exercícios que conflitam com limitações.
 - **Evolução:** 1RM estimada, volume semanal por músculo, recordes, peso, medidas e fotos, exportação em CSV.
 - **Nutrição:** metas de calorias e macros, ritmo do peso, registro diário de proteína, água e suplementos; guia de suplementos por nível de evidência e registro dos prescritos.
+- **Cardio no treino:** seção opcional abaixo dos exercícios de cada sessão, com tipo, intensidade, duração, distância, calorias, FC média e máxima, velocidade, inclinação e foto do painel ou do relógio (no Claude, o app lê os números da foto). Histórico em *Evolução > Cardio*, com minutos por semana comparados à meta de 150 min.
+- **Salvar e finalizar treino:** botão no fim da sessão com resumo (séries, volume, duração, cardio e recordes); o treino fica marcado como finalizado e pode ser reaberto.
 - **Saúde** (aba própria no menu):
   - *Hormônios:* registro de hormônios e medicamentos como estão na receita e conteúdo educativo sobre ergogênicos e riscos.
   - *Exames e colaterais:* laudos com tabela de valores, referência e situação; relato de efeitos colaterais; resumo com perguntas para a consulta.

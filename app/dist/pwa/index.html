@@ -411,6 +411,20 @@ details summary{cursor:pointer}
   @keyframes rise{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 }
 @media (prefers-reduced-motion: reduce){.fill{transition:none}}
+/* cardio e finalizar */
+.cardio{margin-top:12px;display:grid;gap:12px}
+.cardio>.sh2,.centry .sh2,.finish .sh2{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.cardio h3,.finish h3{margin:0;font-size:19px;font-weight:700}
+.centry{background:var(--raised);border-radius:12px;padding:14px;display:grid;gap:12px}
+.centry .field input,.centry .field select{background:var(--surface)}
+.cphoto{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cphoto img{width:84px;height:112px;object-fit:cover;border-radius:10px;background:var(--surface);display:block}
+.fbtn{display:inline-flex;align-items:center;cursor:pointer;background:var(--surface)}
+.finish{margin-top:12px;display:grid;gap:12px}
+.finish.done{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--ok) 55%,transparent)}
+.finbtn{margin-top:16px}
+.cbars{width:100%;height:auto;display:block}
+.ctable th,.ctable td{padding:12px 9px}.ctable th:first-child,.ctable td:first-child{padding-left:16px}
 @media (max-width:360px){.tabbar{left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));padding:6px}.tabbar a{padding:0 8px;min-width:38px}}
 </style>
 
@@ -435,7 +449,9 @@ details summary{cursor:pointer}
     <div class="pills" id="pills" role="group" aria-label="Escolher sessão"></div>
     <div class="card adjust" id="adjust"></div>
     <ol class="exlist" id="exlist"></ol>
+    <div id="cardio"></div>
     <div id="notes"></div>
+    <div id="finish"></div>
     <div class="foot" id="foot"></div>
   </section>
 
@@ -1614,7 +1630,7 @@ const blobUrl=id=>window.DiarioHost&&window.DiarioHost.blobUrl?window.DiarioHost
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 const notesHave=n=>n&&((n.sleep!=null&&n.sleep!=="")||n.energy||(n.pain&&n.pain.trim())||(n.text&&n.text.trim()));
 const setsHave=s=>s&&s.sets&&Object.values(s.sets).some(a=>a.some(x=>x&&(x.kg!=null||x.reps!=null||x.done)));
-const hasData=s=>!!s&&(setsHave(s)||notesHave(s.notes)||(s.swaps&&Object.keys(s.swaps).length>0));
+const hasData=s=>!!s&&(setsHave(s)||notesHave(s.notes)||(s.swaps&&Object.keys(s.swaps).length>0)||(Array.isArray(s.cardio)&&s.cardio.length>0)||!!s.finishedAt);
 const e1=(kg,reps)=>kg!=null&&reps!=null&&reps>0?kg*(1+reps/30):null;
 const exName=(s,id)=>(s&&s.swaps&&s.swaps[id])||(EXBYID[id]?EXBYID[id].n:id);
 function tonnage(s){let t=0,n=0;for(const [id,a] of Object.entries((s&&s.sets)||{})){const ex=EXBYID[id];for(const x of a){if(!x)continue;if(x.done)n++;if(!(ex&&ex.u)&&x.kg!=null&&x.reps!=null)t+=x.kg*x.reps}}return{t,n}}
@@ -1697,7 +1713,7 @@ function ingest(entries){
 }
 
 let saveTimer=null;
-function saveSoon(){S.dirty=true;setStatus("Salvando","busy");clearTimeout(saveTimer);saveTimer=setTimeout(flush,700)}
+function saveSoon(){if(S.local&&!S.local.startedAt)S.local.startedAt=new Date().toISOString();const fe=document.getElementById("fin-err");if(fe)fe.textContent="";S.dirty=true;setStatus("Salvando","busy");clearTimeout(saveTimer);saveTimer=setTimeout(flush,700)}
 async function flush(){
   if(!S.store||!S.local)return;
   if(S.inFlight){S.again=true;return}
@@ -1839,7 +1855,7 @@ function renderDaycard(){
       <div class="stat">${third}</div>
     </div>
     <div class="track" aria-hidden="true"><div class="fill" id="st-bar" style="width:${Math.min(100,tot?100*n/tot:0)}%"></div></div>
-    <button type="button" class="primary" id="go">${n?"Continuar treino":"Começar treino"}</button>`;
+    <button type="button" class="primary" id="go">${goLabel(n)}</button>`;
 }
 function renderCoachCard(){
   const el=$("#coachcard");
@@ -1862,7 +1878,7 @@ function renderSummary(){
   if(a)a.innerHTML=`${n}<small>/ ${tot}</small>`;
   if(b)b.innerHTML=`${fmtNum(t)}<small>kg</small>`;
   if(c)c.style.width=Math.min(100,tot?100*n/tot:0)+"%";
-  if(g)g.textContent=n?"Continuar treino":"Começar treino";
+  if(g)g.textContent=goLabel(n);
   const s=sessOf(P(),S.day);if(!s)return;
   s.ex.forEach(ex=>{
     const li=document.getElementById("ex-"+ex.id);if(!li)return;
@@ -1891,7 +1907,7 @@ function warmHTML(ex){
 function renderList(){
   S.pendingRender=false;
   const s=S.day&&sessOf(P(),S.day);
-  if(!s){$("#exlist").innerHTML="";$("#notes").innerHTML="";renderFoot();return}
+  if(!s){$("#exlist").innerHTML="";$("#cardio").innerHTML="";$("#notes").innerHTML="";$("#finish").innerHTML="";renderFoot();return}
   const p=P(),w=S.week,sets=S.local.sets,swaps=S.local.swaps||{};
   $("#exlist").innerHTML=s.ex.map((ex,k)=>{
     const need=setsFor(ex,w,p),n=Math.max(need,(sets[ex.id]||[]).length),prev=prevFor(ex.id)||[];
@@ -1924,7 +1940,115 @@ function renderList(){
     const title=swapped?`${esc(swapped)}<small>Substitui hoje: ${esc(ex.n)}</small>`:esc(ex.n);
     return`<li class="ex" id="ex-${ex.id}"><div class="exhead"><span class="exnum">${k+1}</span><div style="min-width:0"><h3 class="exname">${title}</h3>${ex.note?`<p class="exnote">${esc(ex.note)}</p>`:""}</div>${rest}<div class="chips">${chips}</div>${tools}</div>${warmOpen?warmHTML(ex):""}<div class="sets">${rows}</div></li>`;
   }).join("");
-  renderNotes();renderSummary();renderFoot();
+  renderCardio();renderNotes();renderFinish();renderSummary();renderFoot();
+}
+/* ---------- Cardio do treino ---------- */
+const CARDIO_TYPES=[["esteira","Esteira"],["bike","Bicicleta"],["eliptico","Elíptico"],["escada","Escada"],["remo","Remo"],["corrida","Corrida ao ar livre"],["caminhada","Caminhada"],["hiit","HIIT / intervalado"],["outro","Outro"]];
+const CARDIO_INT=[["leve","Leve · Z1–2"],["mod","Moderado · Z3"],["forte","Forte · Z4–5"],["int","Intervalado"]];
+const CFIELDS=[["min","Duração","min","decimal"],["km","Distância","km","decimal"],["kcal","Calorias","kcal","numeric"],["hr","FC média","bpm","numeric"],["hrMax","FC máxima","bpm","numeric"],["speed","Velocidade média","km/h","decimal"],["incl","Inclinação ou nível","","text"]];
+const CTYPE=Object.fromEntries(CARDIO_TYPES),CINT=Object.fromEntries(CARDIO_INT);
+const CBLOBS={};let cReading=null,cDelAsk=null;
+const CARDIO_PROMPT=`A imagem é a foto do painel de um aparelho de cardio (esteira, bicicleta, elíptico, escada, remo), de um relógio esportivo ou de um app de corrida. Leia os dados e responda só com JSON neste formato:
+{"tipo":"esteira|bike|eliptico|escada|remo|corrida|caminhada|hiit|outro ou null","minutos":número ou null,"km":número ou null,"kcal":número ou null,"fc_media":número ou null,"fc_max":número ou null,"velocidade_media":número em km/h ou null,"inclinacao":"inclinação em % ou nível do aparelho, como texto curto, ou null"}
+Regras: converta o tempo para minutos (32:30 vira 32.5); converta milhas para km e mph para km/h; use ponto como separador decimal. Não invente: deixe null o que não aparecer na imagem.`;
+const cnum=v=>v!=null&&v!==""&&isFinite(v)?+v:null;
+function cardioTotals(list){const t={n:0,min:0,km:0,kcal:0};for(const c of list||[]){t.n++;t.min+=cnum(c.min)||0;t.km+=cnum(c.km)||0;t.kcal+=cnum(c.kcal)||0}return t}
+function cardioLine(t){const a=[];if(t.min)a.push(fmtNum(Math.round(t.min*10)/10)+" min");if(t.km)a.push(fmtNum(Math.round(t.km*100)/100)+" km");if(t.kcal)a.push(fmtNum(Math.round(t.kcal))+" kcal");return a.join(" · ")}
+function cardioEntryHTML(c){
+  const opt=(arr,cur)=>arr.map(([k,n])=>`<option value="${k}"${k===cur?" selected":""}>${n}</option>`).join("");
+  const val=k=>c[k]==null||c[k]===""?"":esc(k==="incl"?String(c[k]):fmtNum(c[k]));
+  const head=cDelAsk===c.id?`<span>Remover este cardio?</span><span style="display:flex;gap:8px"><button type="button" class="btn" data-cdelno="1">Manter</button><button type="button" class="btn solid" data-cdelyes="${c.id}">Remover</button></span>`:`<b>${esc(CTYPE[c.type]||"Cardio")}</b><button type="button" class="link" data-cdel="${c.id}">Remover</button>`;
+  const photo=S.assets?`<div class="cphoto">${c.photo?`<img src="${esc(blobUrl(c.photo))}" alt="Foto do painel do cardio">`:""}
+      <label class="btn fbtn">${c.photo?"Trocar foto":"Foto do painel ou do relógio"}<input type="file" accept="image/*" class="sr" data-cphoto="${c.id}"></label>
+      ${c.photo&&S.sample?`<button type="button" class="btn fbtn" data-cread="${c.id}"${cReading?" disabled":""}>${cReading===c.id?"Lendo a foto…":"Ler dados da foto"}</button>`:""}
+      ${c.photo?`<button type="button" class="link" data-cphdel="${c.id}">Remover foto</button>`:""}</div>`:"";
+  return`<div class="centry" data-cid="${c.id}"><div class="sh2">${head}</div>
+    <div class="fgrid">
+      <div class="field"><label for="cf-${c.id}-type">Tipo</label><select id="cf-${c.id}-type" data-cf="type">${opt(CARDIO_TYPES,c.type)}</select></div>
+      <div class="field"><label for="cf-${c.id}-int">Intensidade</label><select id="cf-${c.id}-int" data-cf="int">${opt(CARDIO_INT,c.int)}</select></div>
+      ${CFIELDS.map(([k,l,u,im])=>`<div class="field"><label for="cf-${c.id}-${k}">${l}${u?` (${u})`:""}</label><input type="text" inputmode="${im}" id="cf-${c.id}-${k}" data-cf="${k}" value="${val(k)}"></div>`).join("")}
+    </div>
+    ${photo}
+    <div class="field"><label for="cf-${c.id}-note">Anotações</label><input type="text" id="cf-${c.id}-note" data-cf="note" value="${esc(c.note||"")}" placeholder="Ex.: 6 tiros de 1 min a 14 km/h"></div>
+    <p class="err" id="cerr-${c.id}" aria-live="polite"></p></div>`;
+}
+function renderCardio(){
+  const el=$("#cardio");if(!S.day||!S.local){el.innerHTML="";return}
+  const list=S.local.cardio||[],t=cardioTotals(list),line=cardioLine(t);
+  el.innerHTML=`<div class="card cardio"><div class="sh2"><h3>Cardio</h3>${line?`<span class="muted">${line}</span>`:`<span class="muted">Opcional</span>`}</div>
+    ${list.length?"":`<p class="muted" style="margin:0">Registre o cardio do fim do treino: tipo, tempo, distância, calorias e frequência cardíaca.${S.assets?" Se preferir, tire uma foto do painel do aparelho ou do relógio"+(S.sample?" e o app lê os números.":" para guardar junto."):""}</p>`}
+    ${list.map(cardioEntryHTML).join("")}
+    <button type="button" class="btn raised" data-cadd="1" style="justify-self:start">${list.length?"Adicionar outro cardio":"Adicionar cardio"}</button></div>`;
+}
+const cardioById=id=>(S.local&&S.local.cardio||[]).find(c=>c.id===id);
+async function readCardioPhoto(c){
+  if(!S.sample||!c||!c.photo||cReading)return;
+  cReading=c.id;renderCardio();let msg="";
+  try{
+    let blob=CBLOBS[c.photo];if(!blob){const r=await fetch(blobUrl(c.photo));blob=await r.blob()}
+    const out=await S.sample.json(CARDIO_PROMPT,{images:[blob],cache:false})||{};
+    const map={min:"minutos",km:"km",kcal:"kcal",hr:"fc_media",hrMax:"fc_max",speed:"velocidade_media"};let n=0;
+    for(const [k,o] of Object.entries(map)){const v=cnum(out[o]);if(v!=null&&v>=0){c[k]=Math.round(v*100)/100;n++}}
+    if(out.inclinacao!=null&&String(out.inclinacao).trim()){c.incl=String(out.inclinacao).trim().slice(0,30);n++}
+    if(out.tipo&&CTYPE[out.tipo]){c.type=out.tipo;n++}
+    msg=n?`${n} dados lidos da foto. Confira com o painel antes de finalizar.`:"Não encontrei números legíveis nessa foto. Preencha à mão.";
+    if(n)saveSoon();
+  }catch(e){msg=e&&e.code==="rate_limited"?"Muitas leituras seguidas; tente em instantes.":e&&e.code==="not_granted"?"A leitura automática não foi liberada. Preencha à mão.":"Não foi possível ler a foto. Preencha à mão."}
+  cReading=null;renderCardio();const er=$("#cerr-"+c.id);if(er)er.textContent=msg;
+}
+function goLabel(n){return S.local&&S.local.finishedAt?"Treino finalizado · ver resumo":n?"Continuar treino":"Começar treino"}
+function durationMin(L){if(!L.startedAt||!L.finishedAt)return null;const m=Math.round((Date.parse(L.finishedAt)-Date.parse(L.startedAt))/60000);return m>0&&m<600?m:null}
+function finishStatsHTML(L){
+  const {t,n}=tonnage(L),tot=totalSets(),d=durationMin(L),ct=cardioTotals(L.cardio);
+  return`<div class="stats"><div class="stat"><div class="k">Séries</div><div class="v">${n}<small>/ ${tot}</small></div></div>
+    <div class="stat"><div class="k">Volume</div><div class="v">${fmtNum(t)}<small>kg</small></div></div>
+    <div class="stat"><div class="k">Duração</div><div class="v">${d!=null?d+"<small>min</small>":"—"}</div></div></div>
+    ${ct.n?`<p style="margin:0"><b>Cardio:</b> ${esc([...new Set((L.cardio||[]).map(c=>CTYPE[c.type]||"Cardio"))].join(", "))}${cardioLine(ct)?` · ${ct.n>1?"total ":""}${cardioLine(ct)}`:""}</p>`:""}`;
+}
+function renderFinish(){
+  const el=$("#finish");if(!S.day||!S.local){el.innerHTML="";return}
+  const L=S.local;
+  if(L.finishedAt){const h=new Date(L.finishedAt).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    el.innerHTML=`<div class="card finish done"><div class="sh2"><h3>Treino finalizado</h3><span class="chip t-ok">às ${h}</span></div>${finishStatsHTML(L)}
+      <div class="dactions" style="margin:0"><button type="button" class="btn raised" id="fin-see">Ver resumo</button><button type="button" class="link" id="fin-reopen">Reabrir treino</button></div></div>`;return}
+  el.innerHTML=`<button type="button" class="primary finbtn" id="fin">Salvar e finalizar treino</button><p class="err" id="fin-err" style="text-align:center;margin-top:8px"></p>`;
+}
+function openFinishSummary(){
+  const L=S.local;if(!L)return;const {n}=tonnage(L),tot=totalSets(),miss=Math.max(0,tot-n),nt=L.notes||{};
+  const tips=[];if(miss)tips.push(`Ficaram ${miss} ${miss===1?"série":"séries"} sem marcar como feitas.`);
+  if(nt.sleep==null||nt.sleep===""||!nt.energy)tips.push("Anote sono e energia em “Como foi a sessão”: a recomendação de treino usa esses dados.");
+  const prs=[...S.prToasted].filter(k=>String(k).startsWith(curSid())).length;
+  openSheet("Treino finalizado",`<div style="display:grid;gap:14px">${finishStatsHTML(L)}
+    ${prs?`<p style="margin:0;color:var(--gold);font-weight:700">${prs} ${prs===1?"recorde pessoal":"recordes pessoais"} hoje.</p>`:""}
+    ${tips.length?`<ul class="why" style="margin:0">${tips.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+    <p class="muted" style="margin:0">Salvo ${S.assets&&window.DiarioHost?"neste aparelho":"no seu diário"}. Você ainda pode editar as séries e o cardio; o treino continua finalizado.</p>
+    <button type="button" class="primary" data-sheetclose="1">Fechar</button></div>`);
+}
+async function finishWorkout(){
+  const L=S.local;if(!L)return;
+  if(!hasData(L)){const er=$("#fin-err");if(er)er.textContent="Registre ao menos uma série ou o cardio para finalizar.";return}
+  L.finishedAt=new Date().toISOString();clearTimeout(saveTimer);S.dirty=true;
+  await flush();renderDaycard();renderFinish();renderFoot();openFinishSummary();
+}
+function cardioEntries(){
+  const out=[];for(const s of Object.values(S.sessions)){if(!s||s.kind!=="session"||!Array.isArray(s.cardio))continue;for(const c of s.cardio)out.push(Object.assign({date:s.date,prog:s.prog,day:s.day},c))}
+  return out.sort((a,b)=>b.date.localeCompare(a.date));
+}
+function evCardio(){
+  const all=cardioEntries(),el=$("#evol");
+  const lead=`<p class="lead">Cardio registrado no fim dos treinos. A recomendação para saúde é de 150–300 min por semana de intensidade moderada, ou 75–150 min de intensidade forte.</p>`;
+  if(!all.length){el.innerHTML=lead+`<div class="empty">Nenhum cardio registrado ainda. Registre na seção Cardio, abaixo dos exercícios do treino do dia.</div>`;return}
+  const today=todayISO(),inLast=d=>all.filter(c=>c.date>addDays(today,-d)),w=cardioTotals(inLast(7)),m=cardioTotals(inLast(28));
+  const weeks=[];for(let i=7;i>=0;i--){const end=addDays(today,-7*i),start=addDays(end,-6);weeks.push({start,min:all.filter(c=>c.date>=start&&c.date<=end).reduce((a,c)=>a+(cnum(c.min)||0),0)})}
+  const W=320,H=120,pb=22,pt=10,mx=Math.max(150,...weeks.map(x=>x.min)),bw=(W-16)/weeks.length;
+  const y=v=>pt+(1-v/mx)*(H-pt-pb),g150=y(150);
+  const bars=weeks.map((x,i)=>`<rect x="${(8+i*bw+4).toFixed(1)}" y="${y(x.min).toFixed(1)}" width="${(bw-8).toFixed(1)}" height="${Math.max(0,H-pb-y(x.min)).toFixed(1)}" rx="4" fill="${x.min>=150?"var(--ok)":"var(--raised)"}"><title>${fmtShort(x.start)}: ${Math.round(x.min)} min</title></rect><text x="${(8+i*bw+bw/2).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)">${fmtShort(x.start)}</text>`).join("");
+  const chart=`<svg class="cbars" viewBox="0 0 ${W} ${H}" role="img" aria-label="Minutos de cardio por semana nas últimas 8 semanas"><line x1="8" x2="${W-8}" y1="${g150.toFixed(1)}" y2="${g150.toFixed(1)}" stroke="var(--faint)" stroke-dasharray="4 4"/><text x="${W-8}" y="${(g150-4).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--muted)">150 min</text>${bars}</svg>`;
+  const stat=(k,t)=>`<div class="stat"><div class="k">${k}</div><div class="v">${fmtNum(Math.round(t.min))}<small>min</small></div><div class="muted" style="font-size:12px">${[t.km?fmtNum(Math.round(t.km*10)/10)+" km":"",t.kcal?fmtNum(Math.round(t.kcal))+" kcal":""].filter(Boolean).join(" · ")||t.n+(t.n===1?" registro":" registros")}</div></div>`;
+  const rows=all.slice(0,60).map(c=>`<tr><td>${fmtShort(c.date)}</td><td>${esc(CTYPE[c.type]||"Cardio")}${CINT[c.int]?`<div class="muted" style="font-size:12px">${esc(CINT[c.int].split(" ·")[0])}</div>`:""}</td><td class="r">${cnum(c.min)!=null?fmtNum(c.min):"—"}</td><td class="r">${cnum(c.km)!=null?fmtNum(c.km):"—"}</td><td class="r">${cnum(c.kcal)!=null?fmtNum(c.kcal):"—"}</td><td class="r">${cnum(c.hr)!=null?fmtNum(c.hr):"—"}</td><td>${c.photo?`<a href="${esc(blobUrl(c.photo))}" target="_blank" rel="noopener" class="link">Foto</a>`:""}</td></tr>`).join("");
+  el.innerHTML=lead+`<div class="stats">${stat("Últimos 7 dias",w)}${stat("Últimos 28 dias",m)}<div class="stat"><div class="k">Média semanal</div><div class="v">${fmtNum(Math.round(m.min/4))}<small>min</small></div><div class="muted" style="font-size:12px">últimas 4 semanas</div></div></div>
+    <div class="card" style="margin-top:12px"><h3 style="margin:0 0 8px;font-size:17px">Minutos por semana</h3>${chart}</div>
+    <div class="card tblcard" style="margin-top:12px"><div class="tblwrap"><table class="ctable"><thead><tr><th>Data</th><th>Tipo</th><th class="r">Min</th><th class="r">km</th><th class="r">kcal</th><th class="r">FC méd.</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
 }
 function renderNotes(){
   const n=(S.local&&S.local.notes)||{};
@@ -2039,7 +2163,7 @@ async function deleteCustom(id){
 }
 
 /* ---------- Evolução ---------- */
-const SUBS=[["forca","Força"],["volume","Volume"],["recordes","Recordes"],["corpo","Corpo"]];
+const SUBS=[["forca","Força"],["volume","Volume"],["recordes","Recordes"],["cardio","Cardio"],["corpo","Corpo"]];
 function spark(points){
   const W=240,H=64,pl=4,pr=6,pt=8,pb=8;
   const ys=points.map(p=>p.y),min=Math.min(...ys),max=Math.max(...ys),span=max-min||1;
@@ -2053,7 +2177,7 @@ function spark(points){
 const exTag=ex=>ex.prog==="abcdef"?ex.sk:(PMAP[ex.prog]&&PMAP[ex.prog].custom?"Meu "+ex.sk:((CODE[ex.prog]||ex.prog)+" "+ex.sk));
 function renderEvol(){
   $("#subtabs").innerHTML=SUBS.map(([k,n])=>`<button type="button" class="pill" data-sub="${k}" aria-pressed="${k===S.sub}">${n}</button>`).join("");
-  ({forca:evForca,volume:evVolume,recordes:evRecordes,corpo:evCorpo})[S.sub]();
+  ({forca:evForca,volume:evVolume,recordes:evRecordes,cardio:evCardio,corpo:evCorpo})[S.sub]();
 }
 function evForca(){
   const all=Object.values(S.sessions).filter(s=>s.kind==="session"&&hasData(s));
@@ -2871,7 +2995,7 @@ $("#wk-prev").addEventListener("click",()=>{const iso=addDays(S.date,-7);openSes
 $("#wk-next").addEventListener("click",()=>{const iso=addDays(S.date,7);openSession(iso,schedFor(iso))});
 $("#pills").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b)openSession(S.date,b.dataset.k)});
 $("#change").addEventListener("click",()=>{location.hash="#programas"});
-$("#daycard").addEventListener("click",e=>{if(e.target.id==="go"){wake();const first=document.querySelector("#exlist .ex:not(.complete)")||document.querySelector("#exlist .ex");if(first)first.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}});
+$("#daycard").addEventListener("click",e=>{if(e.target.id==="go"&&S.local&&S.local.finishedAt){openFinishSummary();return}if(e.target.id==="go"){wake();const first=document.querySelector("#exlist .ex:not(.complete)")||document.querySelector("#exlist .ex");if(first)first.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}});
 $("#alert").addEventListener("click",async e=>{
   const b=e.target.closest("[data-fat]");if(!b)return;
   const sig=b.closest(".alert").dataset.sig;S.dismissed=sig;
@@ -2917,6 +3041,39 @@ list.addEventListener("click",e=>{
   if(t.dataset.tool==="warm"){if(S.warmOpen.has(ex.id))S.warmOpen.delete(ex.id);else S.warmOpen.add(ex.id);renderList()}
   if(t.dataset.tool==="plates")openPlates(ex);
   if(t.dataset.tool==="swap")openSwap(ex);
+});
+$("#cardio").addEventListener("click",async e=>{
+  if(!S.local)return;const t=e.target;
+  if(t.closest("[data-cadd]")){const L=S.local,list=L.cardio||(L.cardio=[]);const prev=list[list.length-1];
+    const c={id:"c"+Date.now().toString(36),type:prev?prev.type:"esteira",int:prev?prev.int:"leve"};list.push(c);saveSoon();renderCardio();renderFoot();
+    const f=$(`#cf-${c.id}-min`);if(f)f.focus();return}
+  const del=t.closest("[data-cdel]");if(del){cDelAsk=del.dataset.cdel;renderCardio();return}
+  if(t.closest("[data-cdelno]")){cDelAsk=null;renderCardio();return}
+  const yes=t.closest("[data-cdelyes]");if(yes){S.local.cardio=(S.local.cardio||[]).filter(c=>c.id!==yes.dataset.cdelyes);cDelAsk=null;saveSoon();renderCardio();renderFoot();return}
+  const rd=t.closest("[data-cread]");if(rd){readCardioPhoto(cardioById(rd.dataset.cread));return}
+  const pd=t.closest("[data-cphdel]");if(pd){const c=cardioById(pd.dataset.cphdel);if(c){c.photo=null;saveSoon();renderCardio()}return}
+});
+$("#cardio").addEventListener("input",e=>{
+  const k=e.target.dataset.cf;if(!k||!S.local)return;const box=e.target.closest("[data-cid]");const c=box&&cardioById(box.dataset.cid);if(!c)return;
+  const v=e.target.value;
+  if(k==="type"||k==="int"||k==="note"||k==="incl")c[k]=v;
+  else{const x=parseFloat(v.replace(",","."));c[k]=isFinite(x)&&x>=0?x:null}
+  saveSoon();
+  if(k==="type"){const b=box.querySelector(".sh2 b");if(b)b.textContent=CTYPE[v]||"Cardio"}
+  if(["min","km","kcal"].includes(k)){const s=$("#cardio .cardio>.sh2 .muted");if(s)s.textContent=cardioLine(cardioTotals(S.local.cardio))||"Opcional"}
+});
+$("#cardio").addEventListener("change",async e=>{
+  const id=e.target.dataset.cphoto;if(!id||!S.assets)return;const c=cardioById(id),f=e.target.files&&e.target.files[0];if(!c||!f)return;
+  const er=$("#cerr-"+id);if(er)er.textContent="Enviando a foto…";
+  try{const blob=await compress(f);const r=await S.assets.upload(blob);c.photo=r.id;CBLOBS[r.id]=blob;saveSoon();renderCardio();
+    if(S.sample){const er2=$("#cerr-"+id);if(er2)er2.textContent="Foto salva. Toque em “Ler dados da foto” para preencher os campos."}}
+  catch(err){const er2=$("#cerr-"+id);if(er2)er2.textContent=err&&err.code==="quota_exceeded"?"Sem espaço para guardar a foto.":"Não foi possível salvar a foto."}
+});
+$("#sheet-body").addEventListener("click",e=>{if(e.target.closest("[data-sheetclose]"))closeSheet()});
+$("#finish").addEventListener("click",e=>{
+  if(e.target.id==="fin")finishWorkout();
+  else if(e.target.id==="fin-see")openFinishSummary();
+  else if(e.target.id==="fin-reopen"&&S.local){S.local.finishedAt=null;saveSoon();renderFinish();renderDaycard()}
 });
 $("#notes").addEventListener("input",e=>{
   const k=e.target.dataset.note;if(!k||!S.local)return;
