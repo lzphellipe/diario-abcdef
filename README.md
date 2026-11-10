@@ -38,6 +38,22 @@ O projeto tem duas partes que compartilham o mesmo núcleo de IA:
 | **App instalável** | https://lzphellipe.github.io/diario-abcdef/ | Google | Só no celular (`localStorage` + IndexedDB) |
 | **Artefato no Claude** | claude.ai | Conta do Claude | Sincronizado pelo Claude entre aparelhos |
 | **Página simples** | `app/dist/index.html` | Nenhuma | No navegador, sem fotos nem laudos |
+| **App de iPhone** | `mobile/` (Xcode) | Conta local | Só no iPhone |
+
+### App de iPhone (Capacitor)
+
+A pasta `mobile/` empacota o mesmo app como app nativo de iOS (Capacitor 8, Swift Package Manager).
+
+- **Conta local:** no primeiro uso, "Começar neste iPhone" e o cadastro (nome completo, idade, peso, altura). Os dados ficam só no aparelho; o backup sai pela folha de compartilhar do iOS (Arquivos, AirDrop, e-mail). O login com Google no iPhone exige o SDK nativo do Google e fica para uma próxima versão.
+- **Abrir no Xcode (Mac):**
+  ```bash
+  cd mobile
+  npm install
+  npm run sync      # gera o app web e copia para o projeto iOS
+  npm run open      # abre mobile/ios/App/App.xcodeproj no Xcode
+  ```
+  No Xcode, escolha um iPhone do simulador e clique em Run. Para instalar num iPhone de verdade, selecione seu time em *Signing & Capabilities*.
+- **Simulador na nuvem:** o workflow *App iOS (simulador)* compila num Mac do GitHub Actions, roda o app no Simulador de iPhone em modo demonstração (`npm run demo`, com dados fictícios) e publica no branch `ios-simulador` o vídeo, os prints, os logs e o `.app` para simulador.
 
 ### App instalável (PWA)
 
@@ -76,6 +92,7 @@ backend/
 scripts/build-app.js      gera app/dist a partir de app/src + núcleo + pesos
 .github/workflows/ci.yml     testes e verificação do app gerado
 .github/workflows/pages.yml  publica app/dist/pwa no GitHub Pages a cada push na main
+.github/workflows/ios.yml    compila o app de iPhone e roda no Simulador (resultado no branch ios-simulador)
 ```
 
 ## Como rodar

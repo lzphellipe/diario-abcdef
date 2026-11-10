@@ -1,0 +1,21 @@
+{
+  "name": "diario-abcdef-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "App de iPhone do Diário ABCDEF (Capacitor). O conteúdo web vem de app/dist/ios.",
+  "scripts": {
+    "prepare-web": "node scripts/prepare.js",
+    "sync": "node scripts/prepare.js && cap sync ios",
+    "demo": "node scripts/prepare.js --demo && cap sync ios",
+    "open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.6.0",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/ios": "8.6.0",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.0"
+  }
+}

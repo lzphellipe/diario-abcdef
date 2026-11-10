@@ -1,0 +1,12 @@
+{
+  "appId": "br.com.diarioabcdef.app",
+  "appName": "Diário ABCDEF",
+  "webDir": "www",
+  "backgroundColor": "#111112",
+  "ios": {
+    "backgroundColor": "#111112",
+    "contentInset": "never",
+    "scrollEnabled": true,
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}

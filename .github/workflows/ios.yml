@@ -1,0 +1,130 @@
+name: App iOS (simulador)
+
+# Compila o app de iPhone (mobile/) no Xcode de um Mac do GitHub, roda no Simulador
+# com o modo demonstração e publica vídeo, prints, log e o .app no branch ios-simulador.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "mobile/**"
+      - "backend/src/core/**"
+      - "backend/model/weights.json"
+      - "scripts/build-app.js"
+      - ".github/workflows/ios.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ios-simulador
+  cancel-in-progress: true
+
+jobs:
+  simulador:
+    runs-on: macos-15
+    timeout-minutes: 50
+    env:
+      BUNDLE_ID: br.com.diarioabcdef.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Preparar pasta de resultados
+        run: mkdir -p out/prints && xcodebuild -version | tee out/xcode.txt
+
+      - name: Preparar o app (modo demonstração)
+        working-directory: mobile
+        run: |
+          npm ci
+          node scripts/prepare.js --demo
+          npx cap sync ios
+
+      - name: Escolher um iPhone no simulador
+        id: sim
+        run: |
+          xcrun simctl list devices available -j > out/devices.json
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, re
+          d = json.load(open("out/devices.json"))["devices"]
+          best = None
+          for rt, devs in d.items():
+              m = re.search(r"iOS-(\d+)-(\d+)", rt)
+              if not m: continue
+              ver = (int(m.group(1)), int(m.group(2)))
+              for x in devs:
+                  if not x["name"].startswith("iPhone"): continue
+                  pref = 2 if re.search(r"iPhone \d+ Pro$", x["name"]) else 1 if re.search(r"iPhone \d+$", x["name"]) else 0
+                  key = (ver, pref)
+                  if best is None or key > best[0]: best = (key, x)
+          x = best[1]
+          print(f"udid={x['udid']}")
+          print(f"name={x['name']} (iOS {best[0][0][0]}.{best[0][0][1]})")
+          PY
+          cat "$GITHUB_OUTPUT"
+
+      - name: Compilar no Xcode
+        run: |
+          set -o pipefail
+          xcodebuild -project mobile/ios/App/App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination "id=${{ steps.sim.outputs.udid }}" \
+            -derivedDataPath build CODE_SIGNING_ALLOWED=NO build 2>&1 | tee out/xcodebuild.log | grep -E "error:|warning: .*deprecated|BUILD (SUCCEEDED|FAILED)" || true
+          test -d build/Build/Products/Debug-iphonesimulator/App.app
+
+      - name: Rodar no simulador e gravar
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time "9:41" --dataNetwork wifi --wifiBars 3 --cellularBars 4 --batteryState charged --batteryLevel 100 || true
+          xcrun simctl ui "$UDID" appearance dark || true
+          xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/App.app
+          sleep 3
+          xcrun simctl io "$UDID" recordVideo --codec=h264 --force out/simulador.mp4 &
+          REC=$!
+          sleep 2
+          xcrun simctl launch --console-pty --terminate-running-process "$UDID" "$BUNDLE_ID" > out/console.log 2>&1 &
+          APP=$!
+          for i in $(seq -w 1 70); do
+            sleep 3
+            xcrun simctl io "$UDID" screenshot "out/prints/t$i.png" >/dev/null 2>&1 || true
+            grep -q "DEMO_STEP fim" out/console.log && break
+          done
+          sleep 4
+          xcrun simctl io "$UDID" screenshot out/prints/final.png >/dev/null 2>&1 || true
+          kill -INT $REC || true
+          wait $REC || true
+          kill $APP || true
+          # prints menores para o branch: JPEG com 1290 px de altura máx.
+          for f in out/prints/*.png; do sips -Z 1290 -s format jpeg -s formatOptions 72 "$f" --out "${f%.png}.jpg" >/dev/null && rm "$f"; done
+          grep -E "DEMO_STEP|ERROR|Error|error" out/console.log | head -80 || true
+
+      - name: Empacotar o app para o Simulador
+        if: always()
+        run: |
+          if [ -d build/Build/Products/Debug-iphonesimulator/App.app ]; then
+            (cd build/Build/Products/Debug-iphonesimulator && ditto -c -k --keepParent App.app "$GITHUB_WORKSPACE/out/DiarioABCDEF-simulador.app.zip")
+          fi
+
+      - name: Publicar no branch ios-simulador
+        if: always()
+        run: |
+          cd out
+          cat > README.md <<EOF
+          # Diário ABCDEF no Simulador de iPhone
+
+          Gerado pelo workflow "App iOS (simulador)" a partir do commit ${GITHUB_SHA::7}.
+
+          - \`simulador.mp4\`: gravação do app rodando no ${{ steps.sim.outputs.name }}, em modo demonstração (dados fictícios).
+          - \`prints/\`: capturas a cada 3 segundos.
+          - \`DiarioABCDEF-simulador.app.zip\`: o app compilado para o Simulador (arraste para um simulador aberto no Xcode).
+          - \`xcodebuild.log\`, \`console.log\`, \`xcode.txt\`: logs da compilação e do app.
+          EOF
+          git init -q
+          git checkout -q -b ios-simulador
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "Simulador iOS a partir de ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" ios-simulador

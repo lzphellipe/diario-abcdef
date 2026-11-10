@@ -10,6 +10,8 @@
   const CLIENT_ID = (CFG.googleClientId || "").trim();
   const LOCAL_HOSTS = ["localhost", "127.0.0.1", ""];
   const IS_LOCAL = LOCAL_HOSTS.includes(location.hostname) || location.protocol === "file:";
+  const CAP = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() ? window.Capacitor : null;
+  const NATIVE = !!CAP || CFG.platform === "ios";
   const SESSION_KEY = "diario-session";
   const dataKey = sub => "diario-abcdef-v1:" + sub;
   const profileKey = sub => "diario-profile:" + sub;
@@ -22,7 +24,7 @@
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   /* ---------------- Service worker ---------------- */
-  const swReady = ("serviceWorker" in navigator && location.protocol !== "file:")
+  const swReady = (!NATIVE && "serviceWorker" in navigator && location.protocol !== "file:")
     ? navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready).catch(() => null)
     : Promise.resolve(null);
 
@@ -42,7 +44,10 @@
   }
   const reqP = r => new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
   const newId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join("");
-  const blobUrl = id => "_blob/" + id;
+  // No app nativo (WKWebView) não há service worker: os arquivos viram object URLs carregados do IndexedDB.
+  const URLS = {};
+  const blobUrl = id => URLS[id] || "_blob/" + id;
+  async function preloadUrls(sub) { if (!NATIVE) return; try { (await filesOf(sub)).forEach(f => { if (!URLS[f.id]) URLS[f.id] = URL.createObjectURL(f.blob); }); } catch (e) {} }
   let current = null;
 
   const assets = {
@@ -51,13 +56,14 @@
       if (blob.size > 25 * 1024 * 1024) throw Object.assign(new Error("Arquivo grande demais (máximo 25 MB)."), { code: "too_large" });
       const id = newId(), type = blob.type || "application/octet-stream";
       await tx("readwrite", st => st.put({ id, sub: current.sub, type, name: blob.name || "", size: blob.size, at: Date.now(), blob }));
+      if (NATIVE) URLS[id] = URL.createObjectURL(blob);
       return { id, url: blobUrl(id), sizeBytes: blob.size, contentType: type };
     },
     async list() {
       const all = await tx("readonly", st => reqP(st.index("sub").getAll(current.sub)));
       return { assets: all.map(f => ({ id: f.id, url: blobUrl(f.id), sizeBytes: f.size, contentType: f.type })), usage: { bytes: all.reduce((a, f) => a + f.size, 0) } };
     },
-    async delete(id) { await tx("readwrite", st => st.delete(id)); }
+    async delete(id) { await tx("readwrite", st => st.delete(id)); if (URLS[id]) { URL.revokeObjectURL(URLS[id]); delete URLS[id]; } }
   };
   async function filesOf(sub) { return tx("readonly", st => reqP(st.index("sub").getAll(sub))); }
   async function deleteFilesOf(sub) { const all = await filesOf(sub); await tx("readwrite", st => { all.forEach(f => st.delete(f.id)); }); }
@@ -68,6 +74,14 @@
   const downloads = {
     async save({ filename, data }) {
       const blob = data instanceof Blob ? data : new Blob([data], { type: /\.csv$/i.test(filename) ? "text/csv;charset=utf-8" : /\.json$/i.test(filename) ? "application/json" : "text/plain;charset=utf-8" });
+      // No iPhone o WKWebView ignora downloads: grava no cache do app e abre a folha de compartilhar do iOS.
+      const P = CAP && CAP.Plugins;
+      if (P && P.Filesystem && P.Share) {
+        const b64 = (await toDataUrl(blob)).split(",")[1];
+        const w = await P.Filesystem.writeFile({ path: filename, data: b64, directory: "CACHE" });
+        await P.Share.share({ title: filename, url: w.uri, dialogTitle: "Salvar ou enviar" });
+        return;
+      }
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }
@@ -124,6 +138,11 @@
   function loginScreen() {
     return new Promise(resolve => {
       const intro = `<span class="mark">${DUMBBELL}</span><h1>Diário ABCDEF</h1><p>Treinos, evolução, nutrição e acompanhamento num só lugar. Seus dados ficam guardados só neste aparelho.</p>`;
+      if (NATIVE) {
+        showGate(`${intro}<div class="card"><p>Seu diário fica guardado neste iPhone. Para levar os dados para outro aparelho, use <b style="color:#fff">Minha conta › Exportar backup</b>.</p><button type="button" class="btn" id="local">Começar neste iPhone</button></div><p class="small">O login com a conta Google no app de iPhone entra numa próxima versão.</p>`);
+        gate.querySelector("#local").onclick = () => resolve({ sub: "ios-local", name: "", label: "Conta neste iPhone", email: "Dados guardados só no aparelho", picture: "" });
+        return;
+      }
       if (!CLIENT_ID) {
         showGate(`${intro}<div class="card"><p><b style="color:#fff">Login com Google ainda não configurado.</b> Crie um Client ID OAuth (aplicativo da Web) no Google Cloud Console e coloque em <code>app/pwa/config.js</code>.</p>${IS_LOCAL ? `<button type="button" class="btn ghost" id="dev">Entrar em modo de teste</button><p class="small">Disponível só em localhost, para desenvolvimento.</p>` : ""}</div>`);
         const d = gate.querySelector("#dev");
@@ -149,10 +168,10 @@
   function onboarding(user, prev) {
     return new Promise(resolve => {
       const p = prev || {}, first = !prev;
-      const avatar = user.picture ? `<img src="${esc(user.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((user.name || "?").trim().charAt(0).toUpperCase())}</span>`;
+      const avatar = user.picture ? `<img src="${esc(user.picture)}" alt="" referrerpolicy="no-referrer">` : `<span class="ini">${esc((user.name || user.label || "?").trim().charAt(0).toUpperCase())}</span>`;
       showGate(`<h1>${first ? "Complete seu cadastro" : "Editar cadastro"}</h1><p>${first ? "Esses dados ajustam as metas de nutrição, a recomendação de treino e o histórico de peso." : "Atualize seus dados. Mudanças de peso também entram no histórico."}</p>
         <form class="card" id="ob" novalidate>
-          <div class="who">${avatar}<div><b>${esc(user.name || "Sem nome")}</b><span>${esc(user.email || "")}</span></div></div>
+          <div class="who">${avatar}<div><b>${esc(user.name || user.label || "Sem nome")}</b><span>${esc(user.email || "")}</span></div></div>
           <label for="ob-name">Nome completo<input type="text" id="ob-name" autocomplete="name" value="${esc(p.name || user.name || "")}" required></label>
           <div class="row">
             <label for="ob-age">Idade<input type="number" id="ob-age" inputmode="numeric" min="14" max="100" step="1" value="${esc(p.age || "")}" required></label>
@@ -189,6 +208,7 @@
     if (!profile) { profile = await onboarding(user, null); ls.set(profileKey(user.sub), profile); }
     hideGate();
     current = user;
+    await preloadUrls(user.sub);
     try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
     swReady.then(() => {});
     return { storageKey: dataKey(user.sub), user, profile };

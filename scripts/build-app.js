@@ -7,6 +7,7 @@
  *   artifact.html   corpo da página, para publicar como artefato no Claude
  *   index.html      página completa, para abrir no navegador (dados no navegador, sem login)
  *   pwa/            app instalável para o GitHub Pages: login com Google, cadastro, offline, dados no aparelho
+ *   ios/            conteúdo web do app de iPhone (Capacitor, pasta mobile/): conta local, dados no aparelho
  *
  *   node scripts/build-app.js           gera tudo
  *   node scripts/build-app.js --check   falha se app/dist estiver desatualizado (usado na CI)
@@ -48,6 +49,10 @@ function build() {
   out["pwa/index.html"] = page(body('<script src="config.js"></script>\n<script src="pwa.js"></script>'), head);
   for (const f of fs.readdirSync(PWA_SRC)) out["pwa/" + f] = fs.readFileSync(path.join(PWA_SRC, f));
   out["pwa/.nojekyll"] = "";
+  const iosHead = '<meta name="theme-color" content="#111112"><meta name="format-detection" content="telephone=no">';
+  out["ios/index.html"] = page(body('<script src="config.js"></script>\n<script src="pwa.js"></script>'), iosHead);
+  out["ios/pwa.js"] = fs.readFileSync(path.join(PWA_SRC, "pwa.js"));
+  out["ios/config.js"] = '/* Gerado por scripts/build-app.js para o app de iPhone (pasta mobile/). */\nwindow.DIARIO_CONFIG = { googleClientId: "", platform: "ios" };\n';
   return out;
 }
 const same = (a, b) => Buffer.isBuffer(a) || Buffer.isBuffer(b) ? Buffer.compare(Buffer.from(a), Buffer.from(b)) === 0 : a === b;
@@ -59,5 +64,5 @@ if (process.argv.includes("--check")) {
   console.log("app/dist está atualizado.");
 } else {
   for (const [f, c] of Object.entries(out)) { const p = path.join(DIST, f); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, c); }
-  console.log(`Gerado app/dist: artifact.html, index.html e pwa/ (${Object.keys(out).filter(f => f.startsWith("pwa/")).length} arquivos)`);
+  console.log(`Gerado app/dist: artifact.html, index.html, ios/ e pwa/ (${Object.keys(out).filter(f => f.startsWith("pwa/")).length} arquivos)`);
 }
