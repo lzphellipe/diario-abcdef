@@ -12,7 +12,13 @@ O projeto tem duas partes que compartilham o mesmo núcleo de IA:
 ## Funcionalidades do app
 
 - **Treino do dia:** semana em blocos, cartão do dia, registro de carga e reps por série, cronômetro de descanso, tela sempre ligada e vibração.
-- **Programas:** 12 prontos (ABCDEF híbrido, FST-7, Y3T, DC Training, Heavy Duty, German Volume, Blood & Guts, Push Pull Legs, Upper/Lower, Full Body ABC, Mobilidade e Condicionamento) e criador de programas próprios.
+- **Programas:** 31 prontos e criador de programas próprios.
+  - *Metodologias:* FST-7, Y3T, DC Training, Heavy Duty, German Volume, Blood & Guts, Rest-Pause, Myo-reps, Superséries, Tri-sets e Giant sets, Drop Sets, Pré-exaustão, 6-12-25, Pirâmide, SuperSlow (TUT), Mountain Dog, Max-OT e HST.
+  - *Força:* 5×5, 5/3/1, Periodização ondulatória (DUP) e Cluster Sets.
+  - *Divisões:* ABCDEF híbrido, Push Pull Legs, Upper/Lower, Full Body ABC, PHAT, PHUL e Arnold Split.
+  - *Outros:* Mobilidade e Condicionamento.
+  - *Técnicas* marcadas em cada exercício: TS+BO, FST-7, superséries, bi-set, tri-set, giant set, rest-pause, myo-reps, drop set, drop mecânico, pré e pós-exaustão, 6-12-25, pirâmide, cluster, série 21, 1½, parciais e isometria alongadas, negativas, forçadas, TUT, AMRAP, BFR e falha.
+  - A recomendação da IA ainda escolhe entre os 12 programas originais.
 - **Ajustes:** volume e intensidade escolhidos pelo usuário; semana do mesociclo com deload.
 - **Ferramentas por exercício:** sugestão de carga (dupla progressão), aquecimento, calculadora de anilhas, troca de exercício e recorde pessoal.
 - **IA:** recomendação de programa, volume e intensidade a partir do perfil, das limitações e do histórico; troca automática dos exercícios que conflitam com limitações.

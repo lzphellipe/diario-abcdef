@@ -499,6 +499,22 @@ details summary{cursor:pointer}
         <li><b>PA</b><span>Parciais alongadas: na falha, 4–6 meias-reps na metade mais alongada.</span></li>
         <li><b>ISO</b><span>Isometria alongada: segura 20–60 s na posição alongada ao fim da série.</span></li>
         <li><b>Falha</b><span>Heavy Duty e Blood &amp; Guts: 1 série de trabalho até a falha concêntrica, às vezes com forçadas ou negativas.</span></li>
+        <li><b>BS</b><span>Bi-set: dois exercícios do mesmo músculo sem descanso entre eles.</span></li>
+        <li><b>TRI</b><span>Tri-set: três exercícios seguidos, sem descanso, para o mesmo grupo.</span></li>
+        <li><b>GS</b><span>Giant set: quatro ou mais exercícios seguidos para o mesmo grupo; descanso de 2–3 min ao fim do circuito.</span></li>
+        <li><b>MD</b><span>Drop mecânico: na falha, troca para uma variação mais fácil com a mesma carga (ex.: rosca inclinada → em pé → martelo).</span></li>
+        <li><b>PE</b><span>Pré-exaustão: isolador e, sem descanso, o composto do mesmo músculo.</span></li>
+        <li><b>POS</b><span>Pós-exaustão: composto e, sem descanso, o isolador do mesmo músculo.</span></li>
+        <li><b>6-12-25</b><span>Tri-set do mesmo músculo: 6 reps pesadas, 12 moderadas e 25 leves, com 10 s entre os exercícios.</span></li>
+        <li><b>PIR</b><span>Pirâmide: crescente sobe a carga e baixa as reps a cada série; reversa começa pela série mais pesada.</span></li>
+        <li><b>CL</b><span>Cluster: série dividida em blocos de 1–3 reps com 15–30 s de pausa, para usar cargas mais altas.</span></li>
+        <li><b>21</b><span>Série 21: 7 reps na metade de baixo, 7 na de cima e 7 completas, sem pausa.</span></li>
+        <li><b>1½</b><span>Uma e meia: desce, sobe até a metade, desce de novo e sobe inteiro; conta como 1 rep.</span></li>
+        <li><b>NEG</b><span>Negativas: carga acima da 1RM na descida lenta (3–5 s), com ajuda na subida. Use com parceiro ou máquina.</span></li>
+        <li><b>FR</b><span>Forçadas: na falha, o parceiro ajuda o mínimo para mais 1–3 reps.</span></li>
+        <li><b>TUT</b><span>Tempo sob tensão: cadência lenta e controlada; no SuperSlow, 10 s subindo e 10 s descendo.</span></li>
+        <li><b>AMRAP</b><span>Máximo de repetições com boa técnica na última série, parando antes de a técnica quebrar.</span></li>
+        <li><b>BFR</b><span>Restrição de fluxo: manguito no alto do braço ou da coxa, 20–40% de 1RM, 30-15-15-15 reps. Exige manguito adequado; evite com hipertensão, trombose ou varizes importantes sem liberação médica.</span></li>
       </ul>
     </div>
   </section>
@@ -1260,6 +1276,207 @@ const PROGRAMS=[
  {k:"4",name:"Pernas",ex:[E("Cadeira extensora",1,"10–12 até a falha",120,"",{tech:"Falha"}),E("Leg press 45°",1,"10–12 até a falha",180,"",{tech:"Falha"}),E("Agachamento hack",1,"8–10 até a falha",180,"",{tech:"Falha"}),E("Mesa flexora deitada",1,"8–10 até a falha",120,"",{tech:"Falha"}),E("Stiff com barra",1,"8–10",150,"Sem falha"),E("Panturrilha em pé",1,"10–12 até a falha",90,"",{tech:"Falha"})]}
  ]},
 
+{id:"rpt",title:"Rest-Pause",poster:"Rest-Pause",cat:"metodo",tag:"Hipertrofia",level:"Intermediário",freq:"4x por semana",dur:"6–8 semanas",author:"Técnica clássica, popularizada pelo DC Training",rir:"1–2",
+ how:"Upper/Lower com rest-pause na última série de cada exercício. Faça 1–2 séries normais; na última, vá até 1 rep da falha, descanse 15–20 s (10–15 respirações), faça mais reps com a mesma carga e repita mais uma ou duas vezes. Nos compostos livres pesados pare a 1 rep da falha nas mini-séries.",
+ evidence:"Rest-pause dá hipertrofia parecida com séries tradicionais gastando menos tempo; para força máxima as séries tradicionais tendem a ser um pouco melhores. A fadiga é alta, por isso o app limita a 1 série rest-pause por exercício.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Superior A",ex:[E("Supino inclinado com halteres",3,"8–10",150,"RP na última",{tech:"RP",tn:"na última"}),E("Puxada alta pegada neutra",3,"8–10",120,"RP na última",{tech:"RP",tn:"na última"}),E("Desenvolvimento na máquina",3,"8–12",120,"RP na última",{tech:"RP",tn:"na última"}),E("Remada apoiada no peito",3,"10–12",90,"RP na última",{tech:"RP",tn:"na última"}),E("Rosca Scott na máquina",2,"10–12",75,"RP na última",{tech:"RP",tn:"na última"}),E("Tríceps no pulley com corda",2,"10–12",75,"RP na última",{tech:"RP",tn:"na última"})]},
+ {k:"2",name:"Inferior A",ex:[E("Agachamento hack",3,"6–10",180,"RP na última, a 1 rep da falha",{tech:"RP",tn:"na última"}),E("Levantamento terra romeno",3,"8–10",150,"Sem rest-pause"),E("Leg press 45°",2,"10–12",120,"RP na última",{tech:"RP",tn:"na última"}),E("Mesa flexora sentada",3,"10–12",90,"RP na última",{tech:"RP",tn:"na última"}),E("Panturrilha em pé",3,"10–15",60,"RP na última",{tech:"RP",tn:"na última"})]},
+ {k:"3",name:"Superior B",ex:[E("Supino reto na máquina",3,"8–10",150,"RP na última",{tech:"RP",tn:"na última"}),E("Remada cavalinho pegada aberta",3,"8–10",120,"RP na última",{tech:"RP",tn:"na última"}),E("Elevação lateral no cabo",3,"12–15",60,"RP na última",{tech:"RP",tn:"na última"}),E("Pulldown unilateral",2,"10–12",75,"RP na última",{tech:"RP",tn:"na última"}),E("Rosca martelo no cabo com corda",2,"10–12",60,"RP na última",{tech:"RP",tn:"na última"}),E("Tríceps francês no cabo",2,"10–12",60,"RP na última",{tech:"RP",tn:"na última"})]},
+ {k:"4",name:"Inferior B",ex:[E("Leg press 45°, pés médios",3,"8–12",150,"RP na última",{tech:"RP",tn:"na última"}),E("Hip thrust na máquina",3,"8–10",120,"RP na última",{tech:"RP",tn:"na última"}),E("Cadeira extensora",3,"12–15",75,"RP na última",{tech:"RP",tn:"na última"}),E("Mesa flexora deitada",3,"10–12",75,"RP na última",{tech:"RP",tn:"na última"}),E("Panturrilha sentado",3,"12–20",60,"RP na última",{tech:"RP",tn:"na última"})]}
+ ]},
+
+{id:"myo",title:"Myo-reps",poster:"Myo-reps",cat:"metodo",tag:"Hipertrofia",level:"Intermediário",freq:"3x por semana",dur:"6–8 semanas",author:"Borge Fagerli",rir:"1",
+ how:"Full body 3x por semana. Cada exercício é uma série de ativação de 12–20 reps a RIR 1, depois 3–5 respirações e mini-séries de 3–5 reps com a mesma carga, até não conseguir completar as reps da mini-série (máximo de 5 mini-séries). Prefira máquinas, cabos e isoladores.",
+ evidence:"Uma sequência de myo-reps equivale a cerca de 3 séries normais em menos tempo, porque as mini-séries começam já perto da falha. Funciona melhor em exercícios estáveis; em compostos livres pesados a técnica e a segurança pioram.",
+ schedule:[null,"A",null,"B",null,"C",null],
+ sessions:[
+ {k:"A",name:"Full body A",ex:[E("Agachamento hack",2,"Ativação 12–15 + mini 3–5",120,"",{tech:"MR"}),E("Supino reto na máquina",2,"Ativação 12–15 + mini 3–5",90,"",{tech:"MR"}),E("Puxada alta pegada neutra",2,"Ativação 12–15 + mini 3–5",90,"",{tech:"MR"}),E("Elevação lateral no cabo",2,"Ativação 15–20 + mini 3–5",60,"",{tech:"MR"}),E("Mesa flexora sentada",2,"Ativação 12–15 + mini 3–5",60,"",{tech:"MR"})]},
+ {k:"B",name:"Full body B",ex:[E("Leg press 45°",2,"Ativação 15–20 + mini 3–5",120,"",{tech:"MR"}),E("Supino inclinado na máquina",2,"Ativação 12–15 + mini 3–5",90,"",{tech:"MR"}),E("Remada apoiada no peito",2,"Ativação 12–15 + mini 3–5",90,"",{tech:"MR"}),E("Rosca Scott na máquina",2,"Ativação 12–15 + mini 3–5",60,"",{tech:"MR"}),E("Tríceps no pulley com corda",2,"Ativação 12–15 + mini 3–5",60,"",{tech:"MR"})]},
+ {k:"C",name:"Full body C",ex:[E("Cadeira extensora",2,"Ativação 15–20 + mini 3–5",90,"",{tech:"MR"}),E("Hip thrust na máquina",2,"Ativação 12–15 + mini 3–5",90,"",{tech:"MR"}),E("Peck deck",2,"Ativação 12–15 + mini 3–5",60,"",{tech:"MR"}),E("Pulldown unilateral",2,"Ativação 12–15 + mini 3–5",60,"",{tech:"MR"}),E("Crucifixo inverso no peck deck",2,"Ativação 15–20 + mini 3–5",60,"",{tech:"MR"}),E("Panturrilha em pé",2,"Ativação 15–20 + mini 3–5",60,"",{tech:"MR"})]}
+ ]},
+
+{id:"superset",title:"Superséries",poster:"Superséries",cat:"metodo",tag:"Hipertrofia",level:"Intermediário",freq:"4x por semana",dur:"6–8 semanas",author:"Era de ouro do fisiculturismo (Arnold, Weider)",rir:"1–2",
+ how:"Pares de exercícios feitos em sequência, sem descanso entre eles; o descanso vem ao fim do par. Os pares A são agonista e antagonista (peito com costas, bíceps com tríceps, quadríceps com posterior), que poupam tempo sem perder carga. Os pares B são bi-sets do mesmo músculo, para mais estresse metabólico.",
+ evidence:"Superséries agonista-antagonista reduzem o tempo de sessão em cerca de 30–40% mantendo volume e carga. Bi-sets do mesmo músculo aumentam a fadiga e derrubam a carga do segundo exercício: use em isoladores, no fim da sessão.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e costas",ex:[E("Supino inclinado com halteres",4,"8–10",0,"A1 · vá direto à puxada",{tech:"SS",tn:"A1/A2"}),E("Puxada alta pegada aberta",4,"8–10",120,"A2",{tech:"SS",tn:"A1/A2"}),E("Supino reto na máquina",3,"10–12",0,"B1",{tech:"SS",tn:"B1/B2"}),E("Remada baixa no cabo",3,"10–12",90,"B2",{tech:"SS",tn:"B1/B2"}),E("Crucifixo no cabo",3,"12–15",0,"C1 · bi-set de peito",{tech:"BS",tn:"C1/C2"}),E("Flexão de braço",3,"Máx.",90,"C2",{tech:"BS",tn:"C1/C2"})]},
+ {k:"2",name:"Pernas",ex:[E("Agachamento livre",4,"6–10",0,"A1 · vá direto à flexora",{tech:"SS",tn:"A1/A2"}),E("Mesa flexora sentada",4,"10–12",150,"A2",{tech:"SS",tn:"A1/A2"}),E("Leg press 45°",3,"10–12",0,"B1",{tech:"SS",tn:"B1/B2"}),E("Levantamento terra romeno",3,"8–10",120,"B2",{tech:"SS",tn:"B1/B2"}),E("Cadeira extensora",3,"12–15",0,"C1 · bi-set de quadríceps",{tech:"BS",tn:"C1/C2"}),E("Agachamento búlgaro",3,"10–12",90,"C2",{tech:"BS",tn:"C1/C2"})]},
+ {k:"3",name:"Ombros e abdômen",ex:[E("Desenvolvimento com halteres sentado",4,"8–10",0,"A1",{tech:"SS",tn:"A1/A2"}),E("Face pull",4,"12–15",120,"A2",{tech:"SS",tn:"A1/A2"}),E("Elevação lateral com halteres",3,"12–15",0,"B1 · bi-set de deltoide",{tech:"BS",tn:"B1/B2"}),E("Elevação lateral no cabo",3,"15–20",75,"B2",{tech:"BS",tn:"B1/B2"}),E("Abdominal no cabo",3,"12–15",0,"C1",{tech:"SS",tn:"C1/C2"}),E("Panturrilha em pé",3,"10–15",60,"C2",{tech:"SS",tn:"C1/C2"})]},
+ {k:"4",name:"Braços",ex:[E("Rosca direta com barra W",4,"8–10",0,"A1",{tech:"SS",tn:"A1/A2"}),E("Tríceps testa com barra W",4,"8–10",90,"A2",{tech:"SS",tn:"A1/A2"}),E("Rosca inclinada com halteres",3,"10–12",0,"B1",{tech:"SS",tn:"B1/B2"}),E("Tríceps francês no cabo",3,"10–12",75,"B2",{tech:"SS",tn:"B1/B2"}),E("Rosca direta com barra",2,"7 + 7 + 7",0,"C1 · série 21",{tech:"21"}),E("Tríceps no pulley com corda",2,"12–15",60,"C2",{tech:"SS",tn:"C1/C2"})]}
+ ]},
+
+{id:"giant",title:"Tri-sets e Giant sets",poster:"Giant sets",cat:"metodo",tag:"Hipertrofia",level:"Avançado",freq:"4x por semana",dur:"4–6 semanas",author:"Joe Weider",rir:"1–2",
+ how:"Circuitos de 3 (tri-set) ou 4 ou mais (giant set) exercícios do mesmo grupo, um atrás do outro, sem descanso; descanse 2–3 min ao fim do circuito e repita. Comece pelo exercício mais pesado e termine nos isoladores. A carga de cada exercício será menor que numa série isolada.",
+ evidence:"Concentra muito volume e estresse metabólico em pouco tempo. Não há vantagem de hipertrofia sobre séries tradicionais com o mesmo volume, e a fadiga derruba a qualidade dos últimos exercícios. Use em blocos curtos ou quando o tempo for limitado.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e tríceps",ex:[E("Supino inclinado com halteres",3,"8–10",0,"Tri-set 1 · 1º",{tech:"TRI",tn:"1/3"}),E("Supino reto na máquina",3,"10–12",0,"Tri-set 1 · 2º",{tech:"TRI",tn:"2/3"}),E("Crucifixo no cabo",3,"12–15",150,"Tri-set 1 · 3º",{tech:"TRI",tn:"3/3"}),E("Paralelas",3,"8–12",0,"Tri-set 2 · 1º",{tech:"TRI",tn:"1/3"}),E("Tríceps testa com barra W",3,"10–12",0,"Tri-set 2 · 2º",{tech:"TRI",tn:"2/3"}),E("Tríceps no pulley com corda",3,"12–15",120,"Tri-set 2 · 3º",{tech:"TRI",tn:"3/3"})]},
+ {k:"2",name:"Costas e bíceps",ex:[E("Barra fixa pronada",3,"6–10",0,"Giant set · 1º",{tech:"GS",tn:"1/4"}),E("Remada T com apoio",3,"8–10",0,"Giant set · 2º",{tech:"GS",tn:"2/4"}),E("Puxada neutra",3,"10–12",0,"Giant set · 3º",{tech:"GS",tn:"3/4"}),E("Pullover no cabo, braços estendidos",3,"12–15",180,"Giant set · 4º",{tech:"GS",tn:"4/4"}),E("Rosca direta com barra W",3,"8–10",0,"Tri-set · 1º",{tech:"TRI",tn:"1/3"}),E("Rosca inclinada com halteres",3,"10–12",0,"Tri-set · 2º",{tech:"TRI",tn:"2/3"}),E("Rosca martelo no cabo com corda",3,"12–15",120,"Tri-set · 3º",{tech:"TRI",tn:"3/3"})]},
+ {k:"3",name:"Pernas",ex:[E("Agachamento hack",3,"8–10",0,"Giant set · 1º",{tech:"GS",tn:"1/4"}),E("Leg press 45°",3,"12–15",0,"Giant set · 2º",{tech:"GS",tn:"2/4"}),E("Afundo reverso com halteres",3,"10–12",0,"Giant set · 3º",{tech:"GS",tn:"3/4"}),E("Cadeira extensora",3,"15–20",180,"Giant set · 4º",{tech:"GS",tn:"4/4"}),E("Stiff com halteres",3,"10–12",0,"Tri-set · 1º",{tech:"TRI",tn:"1/3"}),E("Mesa flexora deitada",3,"10–12",0,"Tri-set · 2º",{tech:"TRI",tn:"2/3"}),E("Panturrilha em pé",3,"12–20",120,"Tri-set · 3º",{tech:"TRI",tn:"3/3"})]},
+ {k:"4",name:"Ombros",ex:[E("Desenvolvimento na máquina",3,"8–10",0,"Giant set · 1º",{tech:"GS",tn:"1/4"}),E("Elevação lateral com halteres",3,"12–15",0,"Giant set · 2º",{tech:"GS",tn:"2/4"}),E("Crucifixo inverso no peck deck",3,"12–15",0,"Giant set · 3º",{tech:"GS",tn:"3/4"}),E("Elevação lateral no cabo",3,"15–20",180,"Giant set · 4º",{tech:"GS",tn:"4/4"}),E("Encolhimento com halteres",3,"10–12",90)]}
+ ]},
+
+{id:"drop",title:"Drop Sets",poster:"Drop Sets",cat:"metodo",tag:"Hipertrofia",level:"Intermediário",freq:"4x por semana",dur:"4–6 semanas",author:"Henry Atkins e Joe Weider",rir:"0–1",
+ how:"Séries normais nos compostos e drop set na última série dos isoladores: vá até a falha, tire 20–30% da carga sem descansar e continue até a falha, 1 a 3 vezes. Variações: strip set (tirar anilhas da barra), drop mecânico (trocar para uma versão mais fácil do exercício, sem mudar a carga).",
+ evidence:"Revisões recentes mostram hipertrofia semelhante entre drop sets e séries tradicionais com o mesmo volume, com bem menos tempo de treino. Não use em compostos livres pesados: a técnica quebra perto da falha.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e tríceps",ex:[E("Supino inclinado com barra",3,"6–10",150),E("Supino reto com halteres",3,"8–10",120),E("Peck deck",3,"10–12",75,"DS duplo na última",{tech:"DS",tn:"na última"}),E("Tríceps testa com barra W",3,"8–12",90),E("Tríceps no pulley com corda",3,"10–12",60,"DS duplo na última",{tech:"DS",tn:"na última"})]},
+ {k:"2",name:"Costas e bíceps",ex:[E("Barra fixa pronada",3,"6–10",150),E("Remada curvada com barra",3,"8–10",120),E("Puxada alta pegada neutra",3,"10–12",75,"DS na última",{tech:"DS",tn:"na última"}),E("Rosca direta com barra",3,"8–10",90,"Strip set na última",{tech:"DS",tn:"strip"}),E("Rosca martelo",2,"10–12",60,"Drop mecânico: inclinada → em pé → martelo",{tech:"MD"})]},
+ {k:"3",name:"Pernas",ex:[E("Agachamento livre",3,"6–10",180),E("Leg press 45°",3,"10–12",150,"DS na última",{tech:"DS",tn:"na última"}),E("Mesa flexora deitada",3,"10–12",75,"DS na última",{tech:"DS",tn:"na última"}),E("Cadeira extensora",3,"12–15",60,"DS triplo na última",{tech:"DS",tn:"triplo"}),E("Panturrilha em pé",3,"10–15",60,"DS na última",{tech:"DS",tn:"na última"})]},
+ {k:"4",name:"Ombros",ex:[E("Desenvolvimento com halteres sentado",3,"8–10",120),E("Elevação lateral com halteres",4,"12–15",60,"Drop de halteres na última (running the rack)",{tech:"DS",tn:"na última"}),E("Crucifixo inverso no peck deck",3,"12–15",60,"DS na última",{tech:"DS",tn:"na última"}),E("Desenvolvimento na máquina",2,"10–12",90,"Drop mecânico: desenvolvimento → elevação frontal",{tech:"MD"})]}
+ ]},
+
+{id:"preex",title:"Pré-exaustão",poster:"Pré-exaustão",cat:"metodo",tag:"Hipertrofia",level:"Intermediário",freq:"4x por semana",dur:"4–6 semanas",author:"Arthur Jones e Joe Weider",rir:"1–2",
+ how:"Isolador antes do composto do mesmo músculo, sem descanso entre eles: o isolador cansa o músculo-alvo e o composto termina o trabalho com ajuda dos sinergistas. Na pós-exaustão a ordem se inverte (composto e, em seguida, o isolador).",
+ evidence:"A promessa de recrutar mais o músculo-alvo no composto não se confirmou: estudos mostram ativação igual ou menor e menos repetições no composto. Funciona como variação ou para poupar articulações com menos carga, não como método superior.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e tríceps",ex:[E("Peck deck",3,"10–12",0,"Pré-exaustão · vá direto ao supino",{tech:"PE"}),E("Supino inclinado na máquina",3,"8–10",150,"",{tech:"PE"}),E("Crucifixo inclinado com halteres",3,"10–12",0,"Pré-exaustão",{tech:"PE"}),E("Supino reto com halteres",3,"8–10",120,"",{tech:"PE"}),E("Tríceps no pulley",3,"10–12",0,"Pré-exaustão",{tech:"PE"}),E("Paralelas",3,"Máx.",90,"",{tech:"PE"})]},
+ {k:"2",name:"Costas e bíceps",ex:[E("Pullover na máquina",3,"10–12",0,"Pré-exaustão · vá direto à puxada",{tech:"PE"}),E("Puxada alta pegada neutra",3,"8–10",150,"",{tech:"PE"}),E("Remada T com apoio",3,"8–10",0,"Pós-exaustão · vá direto ao pullover",{tech:"POS"}),E("Pullover no cabo, braços estendidos",3,"12–15",120,"",{tech:"POS"}),E("Rosca direta com barra",3,"8–10",90),E("Rosca Scott na máquina",2,"10–12",60)]},
+ {k:"3",name:"Pernas",ex:[E("Cadeira extensora",3,"12–15",0,"Pré-exaustão · vá direto ao leg press",{tech:"PE"}),E("Leg press 45°",3,"10–12",180,"",{tech:"PE"}),E("Mesa flexora deitada",3,"10–12",0,"Pré-exaustão · vá direto ao stiff",{tech:"PE"}),E("Stiff com barra",3,"8–10",150,"",{tech:"PE"}),E("Panturrilha em pé",3,"10–15",60)]},
+ {k:"4",name:"Ombros",ex:[E("Elevação lateral com halteres",3,"12–15",0,"Pré-exaustão · vá direto ao desenvolvimento",{tech:"PE"}),E("Desenvolvimento na máquina",3,"8–10",150,"",{tech:"PE"}),E("Desenvolvimento com halteres sentado",3,"8–10",0,"Pós-exaustão · vá direto à elevação",{tech:"POS"}),E("Elevação lateral no cabo",3,"15–20",90,"",{tech:"POS"}),E("Face pull",3,"12–15",60)]}
+ ]},
+
+{id:"p61225",title:"6-12-25",poster:"6-12-25",cat:"metodo",tag:"Hipertrofia",level:"Avançado",freq:"4x por semana",dur:"3–4 semanas",author:"Charles Poliquin",rir:"0–1",
+ how:"Tri-set do mesmo músculo com 10 s de descanso entre os exercícios: 6 reps pesadas num composto, 12 reps num segundo exercício e 25 reps num isolador leve. Descanse 2–3 min e repita o circuito 2–3 vezes. Use no máximo 2 tri-sets por sessão.",
+ evidence:"Combina tensão mecânica e estresse metabólico num bloco curto. É muito fatigante e não supera séries tradicionais com o mesmo volume; serve como bloco de choque de 3–4 semanas, seguido de semanas mais leves.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e costas",ex:[E("Supino inclinado com barra",3,"6",10,"6 · vá ao supino com halteres",{tech:"6-12-25",tn:"6"}),E("Supino reto com halteres",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Crucifixo no cabo",3,"25",150,"25",{tech:"6-12-25",tn:"25"}),E("Barra fixa pronada com carga",3,"6",10,"6",{tech:"6-12-25",tn:"6"}),E("Puxada neutra",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Pullover no cabo, braços estendidos",3,"25",150,"25",{tech:"6-12-25",tn:"25"})]},
+ {k:"2",name:"Pernas",ex:[E("Agachamento hack",3,"6",10,"6",{tech:"6-12-25",tn:"6"}),E("Leg press 45°",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Cadeira extensora",3,"25",180,"25",{tech:"6-12-25",tn:"25"}),E("Levantamento terra romeno",3,"6",10,"6",{tech:"6-12-25",tn:"6"}),E("Mesa flexora deitada",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Flexora em pé unilateral",3,"25",150,"25",{tech:"6-12-25",tn:"25"})]},
+ {k:"3",name:"Ombros",ex:[E("Desenvolvimento com barra sentado",3,"6",10,"6",{tech:"6-12-25",tn:"6"}),E("Desenvolvimento com halteres sentado",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Elevação lateral com halteres",3,"25",150,"25",{tech:"6-12-25",tn:"25"}),E("Face pull",3,"15",60)]},
+ {k:"4",name:"Braços",ex:[E("Paralelas",3,"6",10,"6 · com carga",{tech:"6-12-25",tn:"6"}),E("Tríceps testa com barra W",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Tríceps no pulley com corda",3,"25",120,"25",{tech:"6-12-25",tn:"25"}),E("Rosca direta com barra",3,"6",10,"6",{tech:"6-12-25",tn:"6"}),E("Rosca inclinada com halteres",3,"12",10,"12",{tech:"6-12-25",tn:"12"}),E("Rosca no cabo com barra reta",3,"25",120,"25",{tech:"6-12-25",tn:"25"})]}
+ ]},
+
+{id:"piramide",title:"Pirâmide",poster:"Pirâmide",cat:"metodo",tag:"Hipertrofia",level:"Iniciante a intermediário",freq:"4x por semana",dur:"6–8 semanas",author:"Método clássico (Thomas DeLorme e escola Weider)",rir:"1–2",
+ how:"Pirâmide crescente nos compostos: a cada série sobe a carga e caem as reps (12 → 10 → 8 → 6). Pirâmide decrescente (reversa) nos exercícios seguintes: a série mais pesada vem primeiro, depois de aquecer, e a carga cai 10% a cada série para manter as reps.",
+ evidence:"Pirâmides e séries com carga fixa dão hipertrofia e força parecidas quando o volume e o esforço são iguais. A reversa permite a série mais pesada sem fadiga prévia; na crescente as primeiras séries funcionam quase como aquecimento.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e tríceps",ex:[E("Supino reto com barra",4,"12 · 10 · 8 · 6",150,"Crescente: suba a carga a cada série",{tech:"PIR",tn:"crescente"}),E("Supino inclinado com halteres",3,"6–8 · 8–10 · 10–12",120,"Reversa: tire ~10% a cada série",{tech:"PIR",tn:"reversa"}),E("Crucifixo no cabo",3,"12–15",75),E("Tríceps testa com barra W",3,"12 · 10 · 8",90,"Crescente",{tech:"PIR",tn:"crescente"}),E("Tríceps no pulley com corda",3,"12–15",60)]},
+ {k:"2",name:"Costas e bíceps",ex:[E("Remada curvada com barra",4,"12 · 10 · 8 · 6",150,"Crescente",{tech:"PIR",tn:"crescente"}),E("Puxada alta pegada aberta",3,"6–8 · 8–10 · 10–12",120,"Reversa",{tech:"PIR",tn:"reversa"}),E("Remada unilateral com halter",3,"10–12",90),E("Rosca direta com barra",3,"12 · 10 · 8",90,"Crescente",{tech:"PIR",tn:"crescente"}),E("Rosca martelo",3,"10–12",60)]},
+ {k:"3",name:"Pernas",ex:[E("Agachamento livre",4,"12 · 10 · 8 · 6",180,"Crescente",{tech:"PIR",tn:"crescente"}),E("Leg press 45°",3,"8 · 10 · 12",150,"Reversa",{tech:"PIR",tn:"reversa"}),E("Stiff com barra",3,"10–12",120),E("Cadeira extensora",3,"12–15",75),E("Mesa flexora deitada",3,"10–12",75)]},
+ {k:"4",name:"Ombros e panturrilha",ex:[E("Desenvolvimento com halteres sentado",4,"12 · 10 · 8 · 6",150,"Crescente",{tech:"PIR",tn:"crescente"}),E("Elevação lateral com halteres",3,"10 · 12 · 15",75,"Reversa",{tech:"PIR",tn:"reversa"}),E("Crucifixo inverso",3,"12–15",60),E("Panturrilha em pé",4,"20 · 15 · 12 · 10",60,"Crescente",{tech:"PIR",tn:"crescente"})]}
+ ]},
+
+{id:"cluster",title:"Cluster Sets",poster:"Cluster Sets",cat:"forca",tag:"Força",level:"Avançado",freq:"3x por semana",dur:"4–6 semanas",author:"Método do treinamento de força e levantamento olímpico",rir:"1–2",
+ how:"Cada série é dividida em blocos de 2–3 reps com 15–30 s de pausa entre eles, usando 80–90% de 1RM. Exemplo: 4 blocos de 2 reps com 20 s de pausa = uma série de 8 reps com carga de 4–5 reps. Nos acessórios, séries normais.",
+ evidence:"As pausas curtas mantêm velocidade e carga mais altas, o que favorece força e potência. Para hipertrofia o resultado é parecido com séries tradicionais quando o volume é o mesmo.",
+ schedule:[null,"1",null,"2",null,"3",null],
+ sessions:[
+ {k:"1",name:"Agachamento e empurrar",ex:[E("Agachamento livre",4,"4 × 2 (20 s)",180,"Cluster a ~85% de 1RM",{tech:"CL"}),E("Supino reto com barra",4,"4 × 2 (20 s)",180,"Cluster a ~85% de 1RM",{tech:"CL"}),E("Afundo reverso com halteres",3,"8–10",90),E("Tríceps no pulley com corda",3,"10–12",60)]},
+ {k:"2",name:"Terra e puxar",ex:[E("Levantamento terra",4,"3 × 2 (30 s)",240,"Cluster a ~85% de 1RM",{tech:"CL"}),E("Barra fixa pronada com carga",4,"4 × 2 (20 s)",180,"",{tech:"CL"}),E("Remada apoiada no peito",3,"8–10",90),E("Rosca direta com barra",3,"8–10",75)]},
+ {k:"3",name:"Desenvolvimento e pernas",ex:[E("Desenvolvimento com barra sentado",4,"4 × 2 (20 s)",180,"",{tech:"CL"}),E("Agachamento livre",3,"5 × 1 (15 s)",180,"Singles a ~90%",{tech:"CL"}),E("Levantamento terra romeno",3,"6–8",120),E("Face pull",3,"12–15",60)]}
+ ]},
+
+{id:"superslow",title:"SuperSlow (TUT)",poster:"SuperSlow",cat:"metodo",tag:"Hipertrofia",level:"Todos os níveis",freq:"2x por semana",dur:"6–8 semanas",author:"Ken Hutchins",rir:"0",
+ how:"Repetições muito lentas, com 10 s na fase concêntrica e 10 s na excêntrica, sem pausa no topo, por uma série de 60–120 s até a falha. Full body com 5–6 exercícios em máquinas, 2 vezes por semana. A versão TUT moderada usa 3–4 s na excêntrica e 1–2 s na concêntrica, com séries de 40–70 s.",
+ evidence:"Repetições muito lentas (mais de ~8 s) reduzem a carga e não trazem vantagem: estudos mostram hipertrofia parecida com cadências de 0,5 a 8 s por repetição. É útil para quem tem dor articular ou pouco tempo; para a maioria, cadência controlada comum é suficiente.",
+ schedule:[null,"A",null,null,"B",null,null],
+ sessions:[
+ {k:"A",name:"Full body A",ex:[E("Leg press horizontal",1,"60–120 s até a falha",120,"10 s sobe · 10 s desce",{tech:"TUT"}),E("Remada apoiada no peito",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Supino reto na máquina",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Pullover na máquina",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Desenvolvimento na máquina",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"})]},
+ {k:"B",name:"Full body B",ex:[E("Mesa flexora sentada",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Cadeira extensora",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Puxada alta pegada neutra",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Supino inclinado na máquina",1,"60–120 s até a falha",120,"10/10",{tech:"TUT"}),E("Abdominal na máquina",1,"60–90 s até a falha",90,"10/10",{tech:"TUT"})]}
+ ]},
+
+{id:"mdog",title:"Mountain Dog",poster:"Mountain Dog",cat:"metodo",tag:"Hipertrofia",level:"Avançado",freq:"4x por semana",dur:"Fases de 4–6 semanas",author:"John Meadows",rir:"0–1",
+ how:"Cada sessão segue 4 fases: pré-ativação com bomba leve, exercício explosivo ou pesado, fase de volume com técnicas de alta intensidade (parciais, 1½ rep, drop sets) e alongamento com carga no fim. O método varia muito os exercícios ao longo das fases.",
+ evidence:"A estrutura junta tensão mecânica, estresse metabólico e alongamento sob carga, todos com respaldo. A combinação inteira não foi testada em estudos; o volume e a fadiga são altos, então inclua semanas leves.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e tríceps",ex:[E("Crucifixo no cabo",2,"15–20",45,"Pré-ativação leve"),E("Supino inclinado com halteres",4,"6–8",150,"Pesado, série mais forte na 3ª"),E("Supino reto na máquina",3,"10–12",90,"1½ rep: desça, suba até a metade, desça de novo",{tech:"1½"}),E("Peck deck",2,"12–15",60,"Parciais alongadas na falha",{tech:"PA"}),E("Paralelas com tronco inclinado",1,"30–60 s",60,"Alongamento com carga embaixo",{tech:"ISO"}),E("Tríceps no pulley com corda",3,"12–15",60,"DS na última",{tech:"DS",tn:"na última"})]},
+ {k:"2",name:"Costas",ex:[E("Pullover no cabo, braços estendidos",2,"15–20",45,"Pré-ativação"),E("Remada curvada com barra",4,"6–8",150,"Pesado"),E("Remada unilateral com halter",3,"10–12",90,"Pausa de 2 s em cima"),E("Puxada alta pegada neutra",3,"10–12",75,"Parciais alongadas na falha",{tech:"PA"}),E("Remada apoiada no peito",2,"12–15",60,"DS na última",{tech:"DS",tn:"na última"}),E("Barra fixa pronada",1,"30–60 s",60,"Pendurado: alongamento com carga",{tech:"ISO"})]},
+ {k:"3",name:"Ombros e braços",ex:[E("Face pull",2,"15–20",45,"Pré-ativação"),E("Desenvolvimento com halteres sentado",4,"6–8",150,"Pesado"),E("Elevação lateral com halteres",3,"12–15",60,"1½ rep",{tech:"1½"}),E("Crucifixo inverso no peck deck",3,"15–20",60,"DS na última",{tech:"DS",tn:"na última"}),E("Rosca inclinada com halteres",3,"10–12",60,"Alongue 20 s embaixo na última",{tech:"ISO"}),E("Rosca martelo no cabo com corda",2,"12–15",60)]},
+ {k:"4",name:"Pernas",ex:[E("Mesa flexora deitada",3,"10–12",60,"Pré-ativação e posterior primeiro"),E("Agachamento livre",4,"6–8",180,"Pesado"),E("Leg press 45°",3,"10–12",120,"1½ rep",{tech:"1½"}),E("Levantamento terra romeno",3,"8–10",120,"Excêntrica de 3 s"),E("Cadeira extensora",2,"15–20",60,"DS duplo na última",{tech:"DS",tn:"duplo"}),E("Panturrilha em pé",3,"10–15",60,"Pausa de 3 s embaixo",{tech:"ISO"})]}
+ ]},
+
+{id:"maxot",title:"Max-OT",poster:"Max-OT",cat:"metodo",tag:"Força",level:"Intermediário",freq:"5x por semana",dur:"8–12 semanas",author:"Paul Delia (AST)",rir:"0–1",
+ how:"Séries pesadas de 4–6 repetições, 6–9 séries por grupo muscular, 2–3 min de descanso e sessões de 30–40 min. Um ou dois grupos por dia. Quando completar 6 reps, aumente a carga. Sem técnicas de falha prolongada.",
+ evidence:"Cargas para 4–6 reps desenvolvem muita força; para hipertrofia funcionam desde que o volume semanal seja suficiente. Exige descansos longos e as articulações sentem mais. Para a maioria, misturar faixas de repetição é mais sustentável.",
+ schedule:[null,"1","2","3","4","5",null],
+ sessions:[
+ {k:"1",name:"Peito e abdômen",ex:[E("Supino inclinado com barra",3,"4–6",180),E("Supino reto com barra",3,"4–6",180),E("Supino reto com halteres",2,"4–6",150),E("Abdominal no cabo",3,"8–10",60)]},
+ {k:"2",name:"Costas",ex:[E("Levantamento terra",2,"4–6",240),E("Barra fixa pronada com carga",3,"4–6",180),E("Remada curvada com barra",3,"4–6",180),E("Remada T com apoio",2,"4–6",150)]},
+ {k:"3",name:"Ombros",ex:[E("Desenvolvimento com barra sentado",3,"4–6",180),E("Desenvolvimento com halteres sentado",2,"4–6",150),E("Elevação lateral com halteres",3,"6–8",90),E("Encolhimento com halteres",3,"4–6",120)]},
+ {k:"4",name:"Pernas",ex:[E("Agachamento livre",3,"4–6",240),E("Leg press 45°",3,"4–6",180),E("Stiff com barra",3,"4–6",180),E("Panturrilha em pé",3,"6–8",90)]},
+ {k:"5",name:"Braços",ex:[E("Rosca direta com barra",3,"4–6",150),E("Rosca alternada com halteres",2,"4–6",120),E("Paralelas",3,"4–6",150,"Com carga"),E("Tríceps testa com barra W",3,"4–6",120)]}
+ ]},
+
+{id:"hst",title:"HST",poster:"HST",cat:"metodo",tag:"Hipertrofia",level:"Intermediário",freq:"3x por semana",dur:"8 semanas",author:"Bryan Haycock",rir:"Varia com a carga",
+ how:"Full body 3x por semana com a carga subindo em toda sessão. Blocos de 2 semanas: 15 reps, depois 10, depois 5, e um bloco final de 5 com negativas. Cada bloco começa ~15% abaixo do máximo daquela faixa e chega ao máximo no fim. Antes de recomeçar, 9–12 dias de descanso (descondicionamento estratégico).",
+ evidence:"Treinar cada músculo 2–3x por semana com sobrecarga progressiva tem boa evidência. O descondicionamento estratégico não tem comprovação forte; uma semana de deload costuma bastar.",
+ schedule:[null,"A",null,"B",null,"A",null],
+ sessions:[
+ {k:"A",name:"Full body A",ex:[E("Agachamento livre",2,"Bloco 15 · 10 · 5",150,"Suba a carga em toda sessão"),E("Supino reto com barra",2,"Bloco 15 · 10 · 5",120),E("Barra fixa pronada",2,"Bloco 15 · 10 · 5",120),E("Desenvolvimento com halteres sentado",2,"Bloco 15 · 10 · 5",90),E("Rosca direta com barra",1,"Bloco 15 · 10 · 5",75,"No último bloco: negativas",{tech:"NEG",tn:"bloco final"}),E("Tríceps testa com barra W",1,"Bloco 15 · 10 · 5",75,"No último bloco: negativas",{tech:"NEG",tn:"bloco final"})]},
+ {k:"B",name:"Full body B",ex:[E("Leg press 45°",2,"Bloco 15 · 10 · 5",150,"Suba a carga em toda sessão"),E("Levantamento terra romeno",2,"Bloco 15 · 10 · 5",120),E("Supino inclinado com halteres",2,"Bloco 15 · 10 · 5",120),E("Remada curvada com barra",2,"Bloco 15 · 10 · 5",120),E("Panturrilha em pé",2,"Bloco 15 · 10 · 5",60),E("Paralelas",1,"Bloco 15 · 10 · 5",75,"No último bloco: negativas",{tech:"NEG",tn:"bloco final"})]}
+ ]},
+
+{id:"phat",title:"PHAT",poster:"PHAT",cat:"divisao",tag:"Hipertrofia",level:"Intermediário",freq:"5x por semana",dur:"8–12 semanas",author:"Layne Norton",rir:"1–2",
+ how:"Power Hypertrophy Adaptive Training: 2 dias de força (superior e inferior, 3–5 reps nos compostos) e 3 dias de hipertrofia por grupo muscular (8–20 reps). Cada músculo é treinado 2x por semana, uma vez pesado e outra com volume. Nos dias de hipertrofia, o primeiro exercício é de velocidade: 6 × 3 a 65–70% do peso do dia de força.",
+ evidence:"Combinar força e hipertrofia com frequência 2x por semana tem boa base. A parte de velocidade é útil para técnica e potência, mas não é essencial para hipertrofia.",
+ schedule:[null,"1","2",null,"3","4","5"],
+ sessions:[
+ {k:"1",name:"Força superior",ex:[E("Remada curvada com barra",3,"3–5",180),E("Barra fixa pronada com carga",2,"6–10",150),E("Supino reto com barra",3,"3–5",180),E("Paralelas",2,"6–10",120,"Com carga"),E("Desenvolvimento com halteres sentado",3,"6–10",120),E("Rosca direta com barra",3,"6–10",90),E("Tríceps testa com barra W",3,"6–10",90)]},
+ {k:"2",name:"Força inferior",ex:[E("Agachamento livre",3,"3–5",240),E("Agachamento hack",2,"6–10",180),E("Cadeira extensora",2,"6–10",90),E("Levantamento terra romeno",3,"5–8",180),E("Mesa flexora deitada",2,"6–10",90),E("Panturrilha em pé",3,"6–10",90)]},
+ {k:"3",name:"Hipertrofia costas e ombros",ex:[E("Remada curvada com barra",6,"3 (velocidade)",90,"65–70% do dia de força"),E("Barra fixa pronada",3,"8–12",90),E("Remada baixa no cabo",3,"8–12",90),E("Remada com halteres apoiada no banco inclinado",2,"12–15",60),E("Puxada alta pegada aberta",2,"15–20",60),E("Desenvolvimento com halteres sentado",3,"8–12",90),E("Elevação lateral com halteres",3,"12–20",60)]},
+ {k:"4",name:"Hipertrofia pernas",ex:[E("Agachamento livre",6,"3 (velocidade)",90,"65–70% do dia de força"),E("Agachamento hack",3,"8–12",120),E("Leg press 45°",2,"12–15",90),E("Cadeira extensora",3,"15–20",60),E("Levantamento terra romeno",3,"8–12",120),E("Mesa flexora deitada",2,"12–15",60),E("Panturrilha sentado",4,"10–15",60)]},
+ {k:"5",name:"Hipertrofia peito e braços",ex:[E("Supino reto com halteres",6,"3 (velocidade)",90,"65–70% do dia de força"),E("Supino inclinado com halteres",3,"8–12",90),E("Supino reto na máquina",2,"12–15",75),E("Crucifixo no cabo",2,"15–20",60),E("Rosca Scott",3,"8–12",60),E("Rosca inclinada com halteres",2,"12–15",60),E("Tríceps no pulley com corda",3,"8–12",60),E("Tríceps francês no cabo",2,"12–15",60)]}
+ ]},
+
+{id:"phul",title:"PHUL",poster:"PHUL",cat:"divisao",tag:"Hipertrofia",level:"Intermediário",freq:"4x por semana",dur:"8–12 semanas",author:"Brandon Campbell",rir:"1–2",
+ how:"Power Hypertrophy Upper Lower: 2 dias de força (superior e inferior, 3–5 reps nos principais) e 2 dias de hipertrofia (8–12 reps), cada músculo 2x por semana.",
+ evidence:"Divisão superior/inferior com faixas de repetição variadas é uma das estruturas com melhor relação entre força, hipertrofia e recuperação para intermediários.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Força superior",ex:[E("Supino reto com barra",4,"3–5",180),E("Supino inclinado com halteres",3,"6–10",120),E("Remada curvada com barra",4,"3–5",180),E("Puxada alta pegada aberta",3,"6–10",120),E("Desenvolvimento com barra sentado",3,"5–8",150),E("Rosca direta com barra",2,"6–10",90),E("Tríceps testa com barra W",2,"6–10",90)]},
+ {k:"2",name:"Força inferior",ex:[E("Agachamento livre",4,"3–5",240),E("Levantamento terra",3,"3–5",240),E("Leg press 45°",3,"10–15",150),E("Mesa flexora deitada",3,"6–10",90),E("Panturrilha em pé",4,"6–10",90)]},
+ {k:"3",name:"Hipertrofia superior",ex:[E("Supino inclinado com barra",4,"8–12",120),E("Crucifixo inclinado com halteres",4,"8–12",75),E("Remada baixa no cabo",4,"8–12",90),E("Remada unilateral com halter",4,"8–12",75),E("Elevação lateral com halteres",4,"8–12",60),E("Rosca inclinada com halteres",4,"8–12",60),E("Tríceps no pulley com corda",4,"8–12",60)]},
+ {k:"4",name:"Hipertrofia inferior",ex:[E("Agachamento hack",4,"8–12",150),E("Afundo reverso com halteres",3,"8–12",90),E("Cadeira extensora",4,"10–15",60),E("Mesa flexora sentada",4,"10–15",60),E("Panturrilha sentado",4,"8–12",60),E("Panturrilha no leg press",4,"8–12",60)]}
+ ]},
+
+{id:"arnold",title:"Arnold Split",poster:"Arnold Split",cat:"divisao",tag:"Hipertrofia",level:"Avançado",freq:"6x por semana",dur:"6–8 semanas",author:"Arnold Schwarzenegger",rir:"1–2",
+ how:"Peito e costas, ombros e braços, pernas, e o ciclo se repete na mesma semana: cada músculo 2x por semana com volume alto. Peito e costas em superséries antagonistas, como Arnold fazia. Descanso no domingo.",
+ evidence:"Frequência 2x por semana e volume alto têm boa base para hipertrofia. O volume original da era de ouro é extremo; o app usa uma versão reduzida, com 10–16 séries por músculo por semana.",
+ schedule:[null,"1","2","3","1","2","3"],
+ sessions:[
+ {k:"1",name:"Peito e costas",ex:[E("Supino reto com barra",4,"6–10",0,"A1 · vá direto à barra fixa",{tech:"SS",tn:"A1/A2"}),E("Barra fixa pronada",4,"6–10",120,"A2",{tech:"SS",tn:"A1/A2"}),E("Supino inclinado com halteres",3,"8–12",0,"B1",{tech:"SS",tn:"B1/B2"}),E("Remada curvada com barra",3,"8–12",120,"B2",{tech:"SS",tn:"B1/B2"}),E("Crucifixo inclinado com halteres",3,"10–12",0,"C1",{tech:"SS",tn:"C1/C2"}),E("Pullover no cabo",3,"12–15",90,"C2",{tech:"SS",tn:"C1/C2"})]},
+ {k:"2",name:"Ombros e braços",ex:[E("Desenvolvimento com barra sentado",4,"6–10",150),E("Elevação lateral com halteres",3,"10–15",60),E("Elevação lateral posterior sentado",3,"12–15",60),E("Rosca direta com barra",3,"8–10",0,"Superséries de braço",{tech:"SS",tn:"A1/A2"}),E("Tríceps testa com barra W",3,"8–10",90,"",{tech:"SS",tn:"A1/A2"}),E("Rosca alternada com halteres",3,"10–12",0,"",{tech:"SS",tn:"B1/B2"}),E("Tríceps no pulley com corda",3,"10–12",60,"",{tech:"SS",tn:"B1/B2"})]},
+ {k:"3",name:"Pernas",ex:[E("Agachamento livre",4,"6–10",180),E("Leg press 45°",3,"10–12",150),E("Cadeira extensora",3,"12–15",75),E("Stiff com barra",3,"8–10",150),E("Mesa flexora deitada",3,"10–12",75),E("Panturrilha em pé",4,"10–15",60)]}
+ ]},
+
+{id:"s5x5",title:"5×5",poster:"5×5",cat:"forca",tag:"Força",level:"Iniciante a intermediário",freq:"3x por semana",dur:"12 semanas",author:"Reg Park e Bill Starr; popularizado pelo StrongLifts",rir:"1–2",
+ how:"Dois treinos alternados (A e B) 3x por semana, com 5 séries de 5 reps na mesma carga nos levantamentos básicos. Ao completar 5 × 5, suba 2,5 kg (5 kg no terra, que é 1 × 5). Se falhar 3 sessões seguidas no mesmo exercício, tire 10% e recomece a progressão.",
+ evidence:"Programa linear simples com ótima evidência para iniciantes ganharem força. Com o tempo a progressão sessão a sessão para; aí vale migrar para 5/3/1, ondulatória ou PHUL.",
+ schedule:[null,"A",null,"B",null,"A",null],
+ sessions:[
+ {k:"A",name:"Treino A",ex:[E("Agachamento livre",5,"5",180),E("Supino reto com barra",5,"5",180),E("Remada curvada com barra",5,"5",180),E("Abdominal no cabo",2,"10–12",60)]},
+ {k:"B",name:"Treino B",ex:[E("Agachamento livre",5,"5",180),E("Desenvolvimento com barra sentado",5,"5",180,"Em pé, se houver estrutura"),E("Levantamento terra",1,"5",240),E("Barra fixa pronada",3,"Máx.",120)]}
+ ]},
+
+{id:"w531",title:"5/3/1",poster:"5/3/1",cat:"forca",tag:"Força",level:"Intermediário",freq:"4x por semana",dur:"Ciclos de 4 semanas",author:"Jim Wendler",rir:"1–2 (última série AMRAP)",
+ how:"Um levantamento principal por dia, calculado sobre 90% da 1RM (training max). Semana 1: 3 × 5 (65, 75, 85%); semana 2: 3 × 3 (70, 80, 90%); semana 3: 5/3/1 (75, 85, 95%); semana 4: deload. A última série é AMRAP (máximo de reps com boa técnica). Depois, assistência Boring But Big: 5 × 10 a 50–60% no mesmo movimento. A cada ciclo, +2,5 kg no superior e +5 kg no inferior.",
+ evidence:"Progressão lenta e sustentável, uma das mais usadas por intermediários. A série AMRAP dá um indicador de progresso; a assistência 5 × 10 acrescenta volume para hipertrofia.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Desenvolvimento",ex:[E("Desenvolvimento com barra sentado",3,"5/3/1 + AMRAP",180,"Em pé, se houver estrutura",{tech:"AMRAP",tn:"última"}),E("Desenvolvimento com barra sentado",5,"10 (BBB)",90,"50–60% do training max"),E("Barra fixa pronada",5,"10",90),E("Face pull",3,"15",60)]},
+ {k:"2",name:"Terra",ex:[E("Levantamento terra",3,"5/3/1 + AMRAP",240,"",{tech:"AMRAP",tn:"última"}),E("Levantamento terra",5,"10 (BBB)",120,"50–60% do training max"),E("Mesa flexora deitada",3,"10–12",75),E("Elevação de pernas na barra",3,"10–15",60)]},
+ {k:"3",name:"Supino",ex:[E("Supino reto com barra",3,"5/3/1 + AMRAP",180,"",{tech:"AMRAP",tn:"última"}),E("Supino reto com barra",5,"10 (BBB)",90,"50–60% do training max"),E("Remada unilateral com halter",5,"10",75),E("Tríceps no pulley com corda",3,"12–15",60)]},
+ {k:"4",name:"Agachamento",ex:[E("Agachamento livre",3,"5/3/1 + AMRAP",240,"",{tech:"AMRAP",tn:"última"}),E("Agachamento livre",5,"10 (BBB)",120,"50–60% do training max"),E("Mesa flexora sentada",3,"10–12",75),E("Abdominal no cabo",3,"12–15",60)]}
+ ]},
+
+{id:"dup",title:"Periodização ondulatória",poster:"Ondulatória (DUP)",cat:"forca",tag:"Força",level:"Intermediário",freq:"3x por semana",dur:"8–12 semanas",author:"Periodização ondulatória diária (DUP)",rir:"1–3",
+ how:"Full body 3x por semana com a faixa de repetições mudando a cada dia: dia de força (4–6 reps, 80–85%), dia de hipertrofia (8–12 reps, 70–75%) e dia de resistência e potência (12–15 reps, ou saltos e arremessos). Os mesmos levantamentos básicos aparecem nos 3 dias.",
+ evidence:"A periodização ondulatória tende a dar ganhos de força um pouco maiores que a linear em intermediários, com hipertrofia semelhante. A variação diária também ajuda a manter a adesão.",
+ schedule:[null,"F",null,"H",null,"R",null],
+ sessions:[
+ {k:"F",name:"Força",ex:[E("Agachamento livre",4,"4–6",180),E("Supino reto com barra",4,"4–6",180),E("Remada curvada com barra",4,"4–6",150),E("Levantamento terra romeno",3,"5–6",150),E("Desenvolvimento com halteres sentado",3,"5–6",120)]},
+ {k:"H",name:"Hipertrofia",ex:[E("Agachamento livre",3,"8–12",120),E("Supino reto com barra",3,"8–12",120),E("Remada curvada com barra",3,"8–12",90),E("Levantamento terra romeno",3,"8–12",90),E("Elevação lateral com halteres",3,"12–15",60),E("Rosca direta com barra",2,"10–12",60)]},
+ {k:"R",name:"Resistência e potência",ex:[E("Agachamento livre",3,"12–15",90,"Ou 5 × 3 de agachamento com salto, leve"),E("Supino reto com halteres",3,"12–15",75),E("Puxada alta pegada neutra",3,"12–15",75),E("Hip thrust",3,"12–15",75),E("Tríceps no pulley com corda",2,"15",45)]}
+ ]},
+
 {id:"ppl",title:"Push Pull Legs",poster:"Push Pull Legs",cat:"divisao",tag:"Hipertrofia",level:"Intermediário",freq:"6x por semana",dur:"5 + 1 semanas",rir:"1–2",
  how:"Empurrar, puxar e pernas, duas vezes na semana. Cada músculo treina 2x com volume moderado por sessão. Compostos de 6–10 reps primeiro, isoladores de 10–20 depois.",
  evidence:"Frequência 2x por semana é o padrão com melhor apoio. 6 dias exige boa recuperação: com sono ou estresse ruins, faça PPL 3x ou Upper/Lower.",
@@ -1316,7 +1533,7 @@ const PROGRAMS=[
  ]}
 ];
 
-const CATS=[{k:"todos",n:"Todos"},{k:"meus",n:"Meus"},{k:"metodo",n:"Metodologias"},{k:"divisao",n:"Divisões"},{k:"mobilidade",n:"Mobilidade"},{k:"cardio",n:"Condicionamento"}];
+const CATS=[{k:"todos",n:"Todos"},{k:"meus",n:"Meus"},{k:"metodo",n:"Metodologias"},{k:"forca",n:"Força"},{k:"divisao",n:"Divisões"},{k:"mobilidade",n:"Mobilidade"},{k:"cardio",n:"Condicionamento"}];
 const TAGS=["Hipertrofia","Força","Mobilidade","Condicionamento"];
 const TAGC={"Hipertrofia":"c-hip","Força":"c-for","Mobilidade":"c-mob","Condicionamento":"c-con"};
 const PMAP={},EXBYID={};
@@ -1366,11 +1583,11 @@ const WEEKS=[null,
   {rir:"~1",t:"Todas as técnicas. Suba a carga onde bateu o topo da faixa."},
   {rir:"0–1",t:"Todas as técnicas. Semana mais dura do ciclo."},
   {rir:"3–4",t:"Deload: nenhuma técnica e metade das séries."}];
-const LATE=new Set(["RP","MR","DS","PA","ISO"]);
-const TECHS=["","TS+BO","FST-7","SS","RP","MR","DS","PA","ISO","Falha"];
+const LATE=new Set(["RP","MR","DS","PA","ISO","21","NEG","FR","MD","6-12-25","1½","BFR"]);
+const TECHS=["","TS+BO","FST-7","SS","BS","TRI","GS","RP","MR","DS","MD","PE","POS","6-12-25","PIR","CL","21","1½","PA","ISO","NEG","FR","TUT","AMRAP","BFR","Falha"];
 const VOL={red:{n:"Reduzido",m:2/3,d:"Cerca de 2/3 das séries. Bom para semanas corridas ou para manter os ganhos com menos tempo."},pad:{n:"Padrão",m:1,d:"Séries como o programa foi escrito."},alto:{n:"Alto",m:4/3,d:"Cerca de 1/3 a mais de séries. Use só se estiver recuperando bem; volte ao padrão se o desempenho cair por 2 sessões."}};
-const INT={mod:{n:"Moderada",dr:1,d:"1 rep a mais na reserva, nada até a falha e sem técnicas de alta fadiga (RP, MR, DS, PA, ISO)."},pad:{n:"Padrão",dr:0,d:"RIR e técnicas como o programa define."},alta:{n:"Alta",dr:-1,d:"1 rep a menos na reserva, técnicas liberadas desde a semana 1 e falha na última série dos isoladores. Top sets e compostos livres continuam sem falha."}};
-const TECH_NAME={"TS+BO":"Top set + back-off","FST-7":"FST-7","SS":"Supersérie","RP":"Rest-pause","MR":"Myo-reps","DS":"Drop set","PA":"Parciais alongadas","ISO":"Isometria alongada","Falha":"Até a falha"};
+const INT={mod:{n:"Moderada",dr:1,d:"1 rep a mais na reserva, nada até a falha e sem técnicas de alta fadiga (rest-pause, myo-reps, drop sets, parciais, isometria, série 21, negativas, forçadas, 6-12-25, 1½ e BFR)."},pad:{n:"Padrão",dr:0,d:"RIR e técnicas como o programa define."},alta:{n:"Alta",dr:-1,d:"1 rep a menos na reserva, técnicas liberadas desde a semana 1 e falha na última série dos isoladores. Top sets e compostos livres continuam sem falha."}};
+const TECH_NAME={"TS+BO":"Top set + back-off","FST-7":"FST-7","SS":"Supersérie","RP":"Rest-pause","MR":"Myo-reps","DS":"Drop set","PA":"Parciais alongadas","ISO":"Isometria alongada","Falha":"Até a falha","BS":"Bi-set","TRI":"Tri-set","GS":"Giant set","MD":"Drop mecânico","PE":"Pré-exaustão","POS":"Pós-exaustão","6-12-25":"6-12-25","PIR":"Pirâmide","CL":"Cluster set","21":"Série 21","1½":"Uma e meia repetição","NEG":"Negativas","FR":"Repetições forçadas","TUT":"Tempo sob tensão (SuperSlow)","AMRAP":"Máximo de repetições","BFR":"Restrição de fluxo sanguíneo"};
 const PLATES=[[25,"#D23B3B",100],[20,"#2F6BD8",100],[15,"#E8C02E",90],[10,"#2E9B5E",80],[5,"#EDEDED",62],[2.5,"#D23B3B",50],[1.25,"#B9BEC6",42]];
 const CLOCK='<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8.5" r="5.75" stroke="currentColor" stroke-width="1.6"/><path d="M8 5.5v3.25l2 1.25M6.5 1.75h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const GLYPH='<svg class="glyph" viewBox="0 0 120 120" fill="currentColor" aria-hidden="true"><rect x="6" y="42" width="12" height="36" rx="3"/><rect x="20" y="28" width="16" height="64" rx="4"/><rect x="84" y="28" width="16" height="64" rx="4"/><rect x="102" y="42" width="12" height="36" rx="3"/><rect x="36" y="55" width="48" height="10" rx="2"/></svg>';
