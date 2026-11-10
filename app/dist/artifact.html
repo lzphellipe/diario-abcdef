@@ -530,6 +530,7 @@ details summary{cursor:pointer}
         <li><b>FR</b><span>Forçadas: na falha, o parceiro ajuda o mínimo para mais 1–3 reps.</span></li>
         <li><b>TUT</b><span>Tempo sob tensão: cadência lenta e controlada; no SuperSlow, 10 s subindo e 10 s descendo.</span></li>
         <li><b>AMRAP</b><span>Máximo de repetições com boa técnica na última série, parando antes de a técnica quebrar.</span></li>
+        <li><b>SST</b><span>Sarcoplasma Stimulating Training: CT com 3 séries até a falha (20 s de pausa) e 3 etapas tirando 20% da carga a cada uma (excêntrica lenta, concêntrica lenta, isometria); RIV com 8 séries até a falha e pausas de 45 a 5 s.</span></li>
         <li><b>BFR</b><span>Restrição de fluxo: manguito no alto do braço ou da coxa, 20–40% de 1RM, 30-15-15-15 reps. Exige manguito adequado; evite com hipertensão, trombose ou varizes importantes sem liberação médica.</span></li>
       </ul>
     </div>
@@ -1389,6 +1390,17 @@ const PROGRAMS=[
  {k:"3",name:"Desenvolvimento e pernas",ex:[E("Desenvolvimento com barra sentado",4,"4 × 2 (20 s)",180,"",{tech:"CL"}),E("Agachamento livre",3,"5 × 1 (15 s)",180,"Singles a ~90%",{tech:"CL"}),E("Levantamento terra romeno",3,"6–8",120),E("Face pull",3,"12–15",60)]}
  ]},
 
+{id:"sst",title:"SST",poster:"SST",cat:"metodo",tag:"Hipertrofia",level:"Avançado",freq:"4x por semana",dur:"4–6 semanas",author:"Patrick Tuor",rir:"1–2",
+ how:"Sarcoplasma Stimulating Training: um único exercício levado várias vezes à falha com pausas curtas, reduções de carga e mudança do tipo de contração. Versão CT (tipo de contração): 3 séries até a falha com a carga de 10RM e 20 s de pausa; depois tire 20% e faça 1 s subindo e 4 s descendo até a falha; 20 s depois, tire mais 20% e faça 4 s subindo e 1 s descendo; 20 s depois, tire mais 20% e segure a isometria no meio do movimento até a falha. Versão RIV (intervalo variável): carga de 10RM em 8 séries até a falha com pausas de 45, 30, 15, 5, 5, 15, 30 e 45 s. Aqui o SST entra no último exercício de cada grupo, depois das séries normais.",
+ evidence:"Num estudo com 12 homens treinados, o SST aumentou mais a espessura muscular logo após o treino (o pump) que séries tradicionais, com lactato igual; o volume total foi menor, principalmente na versão RIV. Não há estudos de longo prazo sobre hipertrofia ou força. Outro estudo mostrou esforço e desconforto bem maiores que no treino tradicional. Use em máquinas e cabos, por poucas semanas e com boa recuperação.",
+ schedule:[null,"1","2",null,"3","4",null],
+ sessions:[
+ {k:"1",name:"Peito e tríceps",ex:[E("Supino inclinado com halteres",3,"8–10",150),E("Supino reto na máquina",3,"8–12",120),E("Peck deck",6,"Falha",20,"Etapa 1–3 com 10RM até a falha e 20 s de pausa; etapa 4: tire 20%, 1 s subindo e 4 s descendo; etapa 5: tire mais 20%, 4 s subindo e 1 s descendo; etapa 6: tire mais 20% e segure isometria no meio do movimento até a falha",{tech:"SST",tn:"CT"}),E("Tríceps testa com barra W",3,"8–12",90),E("Tríceps no pulley com corda",8,"Falha",20,"Carga de 10RM, mesma carga em todas, cada série até a falha. Pausas: 45, 30, 15, 5, 5, 15, 30 e 45 s",{tech:"SST",tn:"RIV"})]},
+ {k:"2",name:"Costas e bíceps",ex:[E("Barra fixa pronada",3,"6–10",150),E("Remada T com apoio",3,"8–10",120),E("Puxada alta pegada neutra",6,"Falha",20,"Etapa 1–3 com 10RM até a falha e 20 s de pausa; etapa 4: tire 20%, 1 s subindo e 4 s descendo; etapa 5: tire mais 20%, 4 s subindo e 1 s descendo; etapa 6: tire mais 20% e segure isometria no meio do movimento até a falha",{tech:"SST",tn:"CT"}),E("Rosca direta com barra W",3,"8–10",90),E("Rosca no cabo com barra reta",6,"Falha",20,"Etapa 1–3 com 10RM até a falha e 20 s de pausa; etapa 4: tire 20%, 1 s subindo e 4 s descendo; etapa 5: tire mais 20%, 4 s subindo e 1 s descendo; etapa 6: tire mais 20% e segure isometria no meio do movimento até a falha",{tech:"SST",tn:"CT"})]},
+ {k:"3",name:"Pernas",ex:[E("Agachamento hack",3,"6–10",180),E("Levantamento terra romeno",3,"8–10",150),E("Cadeira extensora",6,"Falha",20,"Etapa 1–3 com 10RM até a falha e 20 s de pausa; etapa 4: tire 20%, 1 s subindo e 4 s descendo; etapa 5: tire mais 20%, 4 s subindo e 1 s descendo; etapa 6: tire mais 20% e segure isometria no meio do movimento até a falha",{tech:"SST",tn:"CT"}),E("Mesa flexora sentada",8,"Falha",20,"Carga de 10RM, mesma carga em todas, cada série até a falha. Pausas: 45, 30, 15, 5, 5, 15, 30 e 45 s",{tech:"SST",tn:"RIV"}),E("Panturrilha em pé",3,"10–15",60)]},
+ {k:"4",name:"Ombros",ex:[E("Desenvolvimento com halteres sentado",3,"8–10",120),E("Elevação lateral na máquina",6,"Falha",20,"Etapa 1–3 com 10RM até a falha e 20 s de pausa; etapa 4: tire 20%, 1 s subindo e 4 s descendo; etapa 5: tire mais 20%, 4 s subindo e 1 s descendo; etapa 6: tire mais 20% e segure isometria no meio do movimento até a falha",{tech:"SST",tn:"CT"}),E("Crucifixo inverso no peck deck",8,"Falha",20,"Carga de 10RM, mesma carga em todas, cada série até a falha. Pausas: 45, 30, 15, 5, 5, 15, 30 e 45 s",{tech:"SST",tn:"RIV"}),E("Face pull",3,"12–15",60)]}
+ ]},
+
 {id:"superslow",title:"SuperSlow (TUT)",poster:"SuperSlow",cat:"metodo",tag:"Hipertrofia",level:"Todos os níveis",freq:"2x por semana",dur:"6–8 semanas",author:"Ken Hutchins",rir:"0",
  how:"Repetições muito lentas, com 10 s na fase concêntrica e 10 s na excêntrica, sem pausa no topo, por uma série de 60–120 s até a falha. Full body com 5–6 exercícios em máquinas, 2 vezes por semana. A versão TUT moderada usa 3–4 s na excêntrica e 1–2 s na concêntrica, com séries de 40–70 s.",
  evidence:"Repetições muito lentas (mais de ~8 s) reduzem a carga e não trazem vantagem: estudos mostram hipertrofia parecida com cadências de 0,5 a 8 s por repetição. É útil para quem tem dor articular ou pouco tempo; para a maioria, cadência controlada comum é suficiente.",
@@ -1599,11 +1611,11 @@ const WEEKS=[null,
   {rir:"~1",t:"Todas as técnicas. Suba a carga onde bateu o topo da faixa."},
   {rir:"0–1",t:"Todas as técnicas. Semana mais dura do ciclo."},
   {rir:"3–4",t:"Deload: nenhuma técnica e metade das séries."}];
-const LATE=new Set(["RP","MR","DS","PA","ISO","21","NEG","FR","MD","6-12-25","1½","BFR"]);
-const TECHS=["","TS+BO","FST-7","SS","BS","TRI","GS","RP","MR","DS","MD","PE","POS","6-12-25","PIR","CL","21","1½","PA","ISO","NEG","FR","TUT","AMRAP","BFR","Falha"];
+const LATE=new Set(["RP","MR","DS","PA","ISO","21","NEG","FR","MD","6-12-25","1½","BFR","SST"]);
+const TECHS=["","TS+BO","FST-7","SS","BS","TRI","GS","RP","MR","DS","MD","PE","POS","6-12-25","PIR","CL","21","1½","PA","ISO","NEG","FR","TUT","AMRAP","BFR","SST","Falha"];
 const VOL={red:{n:"Reduzido",m:2/3,d:"Cerca de 2/3 das séries. Bom para semanas corridas ou para manter os ganhos com menos tempo."},pad:{n:"Padrão",m:1,d:"Séries como o programa foi escrito."},alto:{n:"Alto",m:4/3,d:"Cerca de 1/3 a mais de séries. Use só se estiver recuperando bem; volte ao padrão se o desempenho cair por 2 sessões."}};
-const INT={mod:{n:"Moderada",dr:1,d:"1 rep a mais na reserva, nada até a falha e sem técnicas de alta fadiga (rest-pause, myo-reps, drop sets, parciais, isometria, série 21, negativas, forçadas, 6-12-25, 1½ e BFR)."},pad:{n:"Padrão",dr:0,d:"RIR e técnicas como o programa define."},alta:{n:"Alta",dr:-1,d:"1 rep a menos na reserva, técnicas liberadas desde a semana 1 e falha na última série dos isoladores. Top sets e compostos livres continuam sem falha."}};
-const TECH_NAME={"TS+BO":"Top set + back-off","FST-7":"FST-7","SS":"Supersérie","RP":"Rest-pause","MR":"Myo-reps","DS":"Drop set","PA":"Parciais alongadas","ISO":"Isometria alongada","Falha":"Até a falha","BS":"Bi-set","TRI":"Tri-set","GS":"Giant set","MD":"Drop mecânico","PE":"Pré-exaustão","POS":"Pós-exaustão","6-12-25":"6-12-25","PIR":"Pirâmide","CL":"Cluster set","21":"Série 21","1½":"Uma e meia repetição","NEG":"Negativas","FR":"Repetições forçadas","TUT":"Tempo sob tensão (SuperSlow)","AMRAP":"Máximo de repetições","BFR":"Restrição de fluxo sanguíneo"};
+const INT={mod:{n:"Moderada",dr:1,d:"1 rep a mais na reserva, nada até a falha e sem técnicas de alta fadiga (rest-pause, myo-reps, drop sets, parciais, isometria, série 21, negativas, forçadas, 6-12-25, 1½, BFR e SST)."},pad:{n:"Padrão",dr:0,d:"RIR e técnicas como o programa define."},alta:{n:"Alta",dr:-1,d:"1 rep a menos na reserva, técnicas liberadas desde a semana 1 e falha na última série dos isoladores. Top sets e compostos livres continuam sem falha."}};
+const TECH_NAME={"TS+BO":"Top set + back-off","FST-7":"FST-7","SS":"Supersérie","RP":"Rest-pause","MR":"Myo-reps","DS":"Drop set","PA":"Parciais alongadas","ISO":"Isometria alongada","Falha":"Até a falha","BS":"Bi-set","TRI":"Tri-set","GS":"Giant set","MD":"Drop mecânico","PE":"Pré-exaustão","POS":"Pós-exaustão","6-12-25":"6-12-25","PIR":"Pirâmide","CL":"Cluster set","21":"Série 21","1½":"Uma e meia repetição","NEG":"Negativas","FR":"Repetições forçadas","TUT":"Tempo sob tensão (SuperSlow)","AMRAP":"Máximo de repetições","BFR":"Restrição de fluxo sanguíneo","SST":"Sarcoplasma Stimulating Training"};
 const PLATES=[[25,"#D23B3B",100],[20,"#2F6BD8",100],[15,"#E8C02E",90],[10,"#2E9B5E",80],[5,"#EDEDED",62],[2.5,"#D23B3B",50],[1.25,"#B9BEC6",42]];
 const CLOCK='<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8.5" r="5.75" stroke="currentColor" stroke-width="1.6"/><path d="M8 5.5v3.25l2 1.25M6.5 1.75h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const GLYPH='<svg class="glyph" viewBox="0 0 120 120" fill="currentColor" aria-hidden="true"><rect x="6" y="42" width="12" height="36" rx="3"/><rect x="20" y="28" width="16" height="64" rx="4"/><rect x="84" y="28" width="16" height="64" rx="4"/><rect x="102" y="42" width="12" height="36" rx="3"/><rect x="36" y="55" width="48" height="10" rx="2"/></svg>';
@@ -1735,7 +1747,7 @@ function techActive(t,w,p){
   return true}
 function setsFor(ex,w,p){
   let n=ex.sets;if(p.meso&&ex.tech==="FST-7"&&w===1)n=5;
-  const fixed=ex.tech==="Falha"||(ex.tech==="RP"&&ex.tn==="DC")||ex.sets===1;
+  const fixed=ex.tech==="Falha"||ex.tech==="SST"||(ex.tech==="RP"&&ex.tn==="DC")||ex.sets===1;
   if(!fixed){
     if(ex.tech==="TS+BO")n=Math.max(2,n+(S.vol==="alto"?1:S.vol==="red"?-1:0));
     else if(ex.tech==="FST-7")n=S.vol==="red"?Math.min(n,5):n;
@@ -1802,10 +1814,10 @@ function weekVolume(){
   if(S.local)list.push(S.local);
   list.filter(s=>s.date>=start&&s.date<=end).forEach(s=>{
     for(const [id,arr] of Object.entries(s.sets||{})){const ex=EXBYID[id];if(!ex)continue;
-      const w=weightsFor(ex,exName(s,id)),f=ex.tech==="FST-7"?.5:1,n=arr.filter(x=>x&&x.done).length;
+      const w=weightsFor(ex,exName(s,id)),f=ex.tech==="FST-7"||ex.tech==="SST"?.5:1,n=arr.filter(x=>x&&x.done).length;
       for(const [m,v] of Object.entries(w))done[m]+=n*v*f}});
   const p=P();p.schedule.forEach(k=>{if(!k)return;const s=sessOf(p,k);if(!s)return;
-    s.ex.forEach(ex=>{const w=weightsFor(EXBYID[ex.id],ex.n),f=ex.tech==="FST-7"?.5:1,n=setsFor(ex,S.week,p);for(const [m,v] of Object.entries(w))plan[m]+=n*v*f})});
+    s.ex.forEach(ex=>{const w=weightsFor(EXBYID[ex.id],ex.n),f=ex.tech==="FST-7"||ex.tech==="SST"?.5:1,n=setsFor(ex,S.week,p);for(const [m,v] of Object.entries(w))plan[m]+=n*v*f})});
   return{start,end,done,plan};
 }
 
