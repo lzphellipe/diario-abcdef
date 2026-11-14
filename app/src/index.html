@@ -1953,8 +1953,8 @@ const apMs=a=>Date.parse(a.at);
 const pkApps=m=>(m.apps||[]).filter(a=>isFinite(apMs(a))).sort((a,b)=>apMs(a)-apMs(b));
 function pkLevelAt(parts,apps,t,def){let c=0;for(const a of apps){const dt=(t-apMs(a))/3600000;if(dt>0)c+=(cnum(a.amt)||def||1)*unitLevel(parts,dt)}return c}
 function pkPeakAfter(parts,apps,from,to,def){let mx=0;const n=120;for(let i=0;i<=n;i++){const t=from+(to-from)*i/n;mx=Math.max(mx,pkLevelAt(parts,apps,t,def))}return mx}
-function pkSteady(m){
-  const parts=pkParts(m),tau=cnum(m.every);if(!parts||!tau)return null;
+function pkSteady(m,tauIn){
+  const parts=pkParts(m),tau=tauIn||cnum(m.every);if(!parts||!tau)return null;
   const T=tau*24,hlMax=Math.max(...parts.map(p=>p.h)),n=Math.min(300,Math.ceil(6*hlMax/T)+3),apps=[];
   for(let i=0;i<n;i++)apps.push({at:new Date(i*T*3600000).toISOString(),amt:1});
   const start=(n-1)*T*3600000,end=start+T*3600000;let mx=0,mn=Infinity;
@@ -1966,21 +1966,28 @@ function pkLateCount(m,days){
   for(let i=1;i<apps.length;i++){if(apMs(apps[i])<since)continue;if(apMs(apps[i])-apMs(apps[i-1])>tau*864e5*1.15+6*36e5)n++}
   return n;
 }
+function pkEffHl(parts){let mx=0,tm=0;for(let h=0;h<=24*400;h+=1){const v=unitLevel(parts,h);if(v>mx){mx=v;tm=h}else if(v<mx*0.5)return h-tm}return null}
+function pkHl(m,parts){const mol=MOLMAP[m.mol];if(!mol)return null;if(mol.id==="outro")return parts[0].h;if(mol.parts)return pkEffHl(parts);return mol.hl}
+function pkIntervals(m){const a=pkApps(m),out=[];for(let i=1;i<a.length;i++)out.push((apMs(a[i])-apMs(a[i-1]))/864e5);return out}
+function pkAvgInterval(m){const iv=pkIntervals(m).slice(-8);if(!iv.length)return null;const avg=iv.reduce((x,y)=>x+y,0)/iv.length;return{avg,n:iv.length,min:Math.min(...iv),max:Math.max(...iv)}}
+const pkTau=m=>cnum(m.every)||(pkAvgInterval(m)||{}).avg||null;
+const fmt1=x=>fmtNum(Math.round(x*10)/10);
 const dtText=ms=>{const h=Math.abs(ms)/36e5;if(h<1)return Math.max(1,Math.round(h*60))+" min";if(h<48){const H=Math.floor(h),M=Math.round((h-H)*60);return H+" h"+(M&&H<10?" "+M+" min":"")}const d=Math.floor(h/24),r=Math.round(h-d*24);return d+" dia"+(d>1?"s":"")+(r?" e "+r+" h":"")};
 const dtShort=ms=>{const h=Math.abs(ms)/36e5;if(h<1)return Math.max(1,Math.round(h*60))+" min";if(h<48)return Math.round(h)+" h";const d=Math.floor(h/24),r=Math.round(h-d*24);return d+"d"+(r?" "+r+"h":"")};
 const whenTxt=ms=>new Date(ms).toLocaleString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 function pkStatus(m){
   const parts=pkParts(m);if(!parts)return null;
-  const mol=MOLMAP[m.mol],hl=mol.id==="outro"?parts[0].h:(mol.parts?null:mol.hl),apps=pkApps(m),now=Date.now(),def=cnum(m.amt)||1;
-  const hlTxt=mol.parts?"mistura de ésteres":hlText(hl);
-  const st={parts,hlTxt,mol,apps,src:mol.src};
+  const mol=MOLMAP[m.mol],hl=pkHl(m,parts),apps=pkApps(m),now=Date.now(),def=cnum(m.amt)||1;
+  const hlTxt=mol.parts?"≈ "+hlText(hl)+" (efetiva da mistura)":hlText(hl);
+  const st={parts,hl,hlTxt,mol,apps,src:mol.src,avgIv:pkAvgInterval(m)};
   if(!apps.length)return st;
   const last=apps[apps.length-1],lm=apMs(last);st.last=last;st.lastTxt=whenTxt(lm);st.since=now-lm;
   st.hls=hl?st.since/36e5/hl:null;
   const peak=pkPeakAfter(parts,apps,lm,Math.max(lm+1,Math.min(now,lm+ (cnum(m.every)||30)*864e5)),def)||pkLevelAt(parts,apps,now,def);
   const lv=pkLevelAt(parts,apps,now,def),lv24=pkLevelAt(parts,apps,now+864e5,def);
   st.nowPct=peak?Math.round(lv/peak*100):0;st.dropDay=lv?Math.max(0,Math.round((lv-lv24)/lv*100)):0;
-  const tau=cnum(m.every);
+  const tau=pkTau(m);st.tau=tau;st.tauSrc=cnum(m.every)?"receita":tau?"média":null;st.peak=peak;
+  {const end=Math.max(now,tau?lm+tau*864e5:now),N=96;let acc=0;for(let i=0;i<=N;i++)acc+=pkLevelAt(parts,apps,lm+(end-lm)*i/N,def);st.cycleAvg=peak?Math.round(acc/(N+1)/peak*100):0}
   if(tau){const due=lm+tau*864e5;st.due=due;st.dueTxt=whenTxt(due);st.toDue=due-now;
     st.state=st.toDue<0?"late":st.toDue<=864e5?"soon":"ok";
     const at=pkLevelAt(parts,apps,due,def);st.duePct=peak?Math.round(at/peak*100):0}
@@ -1993,20 +2000,34 @@ function pkBlock(m){
   if(!st.last)return`<div class="pk"><p class="muted" style="margin:0">Meia-vida considerada: <b>${esc(st.hlTxt)}</b>. Registre a primeira aplicação para começar a contagem.</p>${btns}</div>`;
   const chip=st.state==="late"?`<span class="chip t-bad">Atrasada há ${dtText(-st.toDue)}</span>`:st.state==="soon"?`<span class="chip t-late">Próxima em ${dtText(st.toDue)}</span>`:st.state==="low"?`<span class="chip t-late">Nível estimado abaixo de 50%</span>`:st.due?`<span class="chip t-ok">Próxima em ${dtText(st.toDue)}</span>`:"";
   const warn=st.state==="late"?`<p class="pkwarn">O nível estimado está em <b>${st.nowPct}% do pico</b> e cai cerca de ${st.dropDay}% por dia sem a próxima aplicação. Siga o horário combinado com o seu médico; não compense com dose maior por conta própria.</p>`
-    :st.state==="soon"?`<p class="pkwarn soft">A próxima aplicação prevista pela receita é ${esc(st.dueTxt)}. Aplicar no horário evita que o nível estimado caia além de ${st.duePct}% do pico.</p>`
+    :st.state==="soon"?`<p class="pkwarn soft">A próxima aplicação prevista ${st.tauSrc==="média"?"pela média das suas aplicações":"pela receita"} é ${esc(st.dueTxt)}. Aplicar no horário evita que o nível estimado caia além de ${st.duePct}% do pico.</p>`
     :st.state==="low"?`<p class="pkwarn soft">O nível estimado já caiu para ${st.nowPct}% do pico. Informe o intervalo da receita no cadastro para o app prever a próxima aplicação.</p>`:"";
   return`<div class="pk"><div class="sh2"><b>Meia-vida</b>${chip}</div>
     <div class="stats"><div class="stat"><div class="k">Desde a última</div><div class="v">${dtShort(st.since)}</div><div class="muted" style="font-size:12px">${st.hls!=null?fmtNum(Math.round(st.hls*10)/10)+" meia-vida"+(st.hls>=2?"s":""):esc(st.hlTxt)}</div></div>
       <div class="stat"><div class="k">Nível estimado</div><div class="v">${st.nowPct}<small>%</small></div><div class="muted" style="font-size:12px">do pico · −${st.dropDay}%/dia</div></div>
       <div class="stat"><div class="k">Próxima</div><div class="v">${st.due?esc(new Date(st.due).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})):"—"}</div><div class="muted" style="font-size:12px">${st.due?"vale ≈ "+st.duePct+"%":"sem intervalo"}</div></div></div>
-    ${warn}${btns}</div>`;
+    ${avgLine(st)}${warn}${btns}</div>`;
+}
+function avgLine(st){
+  const a=st.avgIv,parts=[];
+  if(a)parts.push(`Intervalo médio entre as suas aplicações: <b>${fmt1(a.avg)} dias</b>${st.hl?` (${fmt1(a.avg*24/st.hl)} meia-vida${a.avg*24/st.hl>=2?"s":""})`:""}${a.n>1?`, de ${fmt1(a.min)} a ${fmt1(a.max)}`:""}`);
+  if(st.cycleAvg)parts.push(`nível médio estimado no ciclo: <b>${st.cycleAvg}% do pico</b>`);
+  if(st.tauSrc==="média")parts.push("próxima prevista pela média das suas aplicações (informe o intervalo da receita no cadastro, se houver)");
+  return parts.length?`<p class="muted" style="margin:0;font-size:13px;line-height:1.5">${parts.join(" · ")}.</p>`:"";
+}
+function pkDayRows(m,st){
+  const lm=apMs(st.last),def=cnum(m.amt)||1,now=Date.now(),hl=st.hl||24;
+  const days=Math.min(120,Math.max(Math.ceil((st.due?st.due-lm:2*hl*36e5)/864e5),Math.ceil((now-lm)/864e5)+1,3));
+  const rows=[];let sum=0;
+  for(let d=0;d<=days;d++){const t=lm+d*864e5,v=st.peak?pkLevelAt(st.parts,st.apps,t+1,def)/st.peak*100:0;rows.push({d,t,v,hls:d*24/hl});if(d>0)sum+=v}
+  return{rows,avg:days?sum/days:0};
 }
 function renderMedAlert(){
   const el=$("#medalert");if(!el)return;
   const items=Object.values(S.meds).filter(m=>m.active).map(m=>[m,pkStatus(m)]).filter(([m,st])=>st&&st.last&&(st.state==="late"||st.state==="soon"));
   if(!items.length){el.innerHTML="";return}
   el.innerHTML=items.map(([m,st])=>`<div class="alert"${st.state==="soon"?' style="background:var(--surface)"':""}><h3${st.state==="soon"?' style="color:var(--ink)"':""}>${st.state==="late"?"Aplicação atrasada":"Aplicação próxima"}: ${esc(m.name)}</h3>
-    <p>${st.state==="late"?`Prevista pela receita para ${esc(st.dueTxt)}. Nível estimado agora: ${st.nowPct}% do pico, caindo cerca de ${st.dropDay}% por dia.`:`Prevista pela receita para ${esc(st.dueTxt)} (em ${dtText(st.toDue)}).`}</p>
+    <p>${st.state==="late"?`Prevista ${st.tauSrc==="média"?"pela média das suas aplicações":"pela receita"} para ${esc(st.dueTxt)}. Nível estimado agora: ${st.nowPct}% do pico, caindo cerca de ${st.dropDay}% por dia.`:`Prevista ${st.tauSrc==="média"?"pela média das suas aplicações":"pela receita"} para ${esc(st.dueTxt)} (em ${dtText(st.toDue)}).`}</p>
     <div class="acts"><button type="button" class="btn light" data-medact="app" data-id="${m.id}">Registrar aplicação</button><button type="button" class="btn raised" data-medact="curve" data-id="${m.id}">Ver curva</button></div></div>`).join("");
 }
 const localInput=ms=>{const d=new Date(ms),p=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
@@ -2030,7 +2051,7 @@ async function saveApp(){
   closeSheet();renderMedAlert();if(currentView()==="saude")renderHealth();toast("Aplicação registrada");
 }
 function pkChart(m,st){
-  const def=cnum(m.amt)||1,now=Date.now(),tau=cnum(m.every),apps=st.apps;
+  const def=cnum(m.amt)||1,now=Date.now(),tau=st.tau,apps=st.apps;
   const span=Math.max(14,tau?tau*3:14)*864e5,from=Math.max(apMs(apps[0])-864e5,now-span*1.6),to=now+span;
   const proj=[...apps];if(tau){let next=Math.max(apMs(apps[apps.length-1])+tau*864e5,now);while(next<to){proj.push({at:new Date(next).toISOString(),amt:def,f:1});next+=tau*864e5}}
   const N=220,pts=[];let mx=0;for(let i=0;i<=N;i++){const t=from+(to-from)*i/N,v=pkLevelAt(st.parts,t<=now?apps:proj,t,def);pts.push([t,v]);mx=Math.max(mx,v)}
@@ -2051,15 +2072,23 @@ function pkChart(m,st){
 }
 function openPkSheet(m){
   const st=pkStatus(m);if(!st||!st.last){openAppForm(m);return}
-  S.sheetMode="pk";S.appMed=m.id;const ss=pkSteady(m),apps=[...st.apps].reverse();
-  openSheet(m.name,`<div style="display:grid;gap:14px">
+  S.sheetMode="pk";S.appMed=m.id;const ss=pkSteady(m,st.tau),apps=[...st.apps].reverse(),dr=pkDayRows(m,st),today0=new Date();today0.setHours(0,0,0,0);
+  const ivOf=a=>{const i=st.apps.indexOf(a);return i>0?(apMs(a)-apMs(st.apps[i-1]))/864e5:null};
+  openSheet(m.name,`<div style="display:grid;gap:14px;grid-template-columns:minmax(0,1fr)">
     <p class="muted" style="margin:0">Meia-vida considerada: <b>${esc(st.hlTxt)}</b>. Fonte: ${esc(st.src)}.</p>
     <div class="card" style="padding:14px">${pkChart(m,st)}<p class="muted" style="margin:6px 0 0;font-size:12px">Linha cheia: estimativa a partir das aplicações registradas. Tracejada: projeção se as próximas forem feitas nos dias da receita. Pontos: aplicações.</p></div>
     <div class="stats"><div class="stat"><div class="k">Agora</div><div class="v">${st.nowPct}<small>%</small></div></div><div class="stat"><div class="k">Em 24 h</div><div class="v">−${st.dropDay}<small>%</small></div></div><div class="stat"><div class="k">${st.state==="late"?"Na data prevista":"Vale previsto"}</div><div class="v">${st.due?st.duePct+"<small>%</small>":"—"}</div></div></div>
-    ${ss?`<p style="margin:0">Com o intervalo da receita (a cada ${fmtNum(m.every)} dias), quando o nível estabiliza ele varia de 100% no pico até cerca de <b>${Math.round(ss.ratio*100)}%</b> antes da próxima aplicação.</p>`:""}
+    ${ss?`<p style="margin:0">Com o intervalo ${st.tauSrc==="média"?"médio das suas aplicações":"da receita"} (a cada ${fmt1(st.tau)} dias), quando o nível estabiliza ele varia de 100% no pico até cerca de <b>${Math.round(ss.ratio*100)}%</b> antes da próxima aplicação.</p>`:""}
     ${ss&&ss.ratio<0.5?`<div class="note-box">A curva estimada cai para menos da metade do pico antes de cada aplicação. Se você sente cansaço, queda de libido ou de humor perto da data, leve esta curva ao seu médico: ele pode avaliar intervalo, dose ou forma de aplicação, e pedir o exame no vale (logo antes da aplicação). Não mude o esquema por conta própria.</div>`:""}
-    <div><h3 style="margin:0 0 8px;font-size:17px">Aplicações</h3><div class="tblwrap card tblcard"><table class="ctable"><thead><tr><th>Data</th><th class="r">Qtd.</th><th>Local</th><th></th></tr></thead><tbody>
-      ${apps.slice(0,40).map(a=>`<tr><td>${esc(whenTxt(apMs(a)))}</td><td class="r">${a.amt!=null?esc(fmtNum(a.amt))+(m.unit?" "+esc(m.unit):""):"—"}</td><td>${esc(a.site||"")}</td><td><button type="button" class="link" data-appdel="${esc(a.id||a.at)}">Apagar</button></td></tr>`).join("")}
+    <div><h3 style="margin:0 0 4px;font-size:17px">Contagem desde a última aplicação</h3>
+      <p class="muted" style="margin:0 0 8px;font-size:13px">Dia 0 é o dia em que você aplicou (${esc(whenTxt(apMs(st.last)))}). Meias-vidas de ${esc(st.hlTxt)}; nível em % do pico deste ciclo.</p>
+      <div class="tblwrap card tblcard" style="max-height:340px;overflow-y:auto"><table class="ctable"><thead><tr><th>Dia</th><th>Data</th><th class="r">Meias-vidas</th><th class="r">Nível</th></tr></thead><tbody>
+      ${dr.rows.map(r=>{const isToday=new Date(r.t).setHours(0,0,0,0)===today0.getTime(),isDue=st.due&&Math.abs(r.t-st.due)<864e5/2;return`<tr${isToday?' style="background:var(--raised)"':""}><td>${r.d}${r.d===0?" · aplicação":""}${isToday?" · hoje":""}${isDue?" · próxima":""}</td><td>${esc(new Date(r.t).toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit"}))}</td><td class="r">${st.hl?fmt1(r.hls):"—"}</td><td class="r"${r.v<50?' style="color:var(--warn)"':""}>${Math.round(r.v)}%</td></tr>`}).join("")}
+      <tr><td colspan="3"><b>Média do ciclo</b> (dias 1–${dr.rows.length-1})</td><td class="r"><b>${Math.round(dr.avg)}%</b></td></tr>
+      </tbody></table></div></div>
+    <div><h3 style="margin:0 0 8px;font-size:17px">Aplicações</h3><div class="tblwrap card tblcard"><table class="ctable"><thead><tr><th>Data</th><th class="r">Qtd.</th><th class="r">Intervalo</th><th></th></tr></thead><tbody>
+      ${apps.slice(0,40).map(a=>{const iv=ivOf(a);return`<tr><td>${esc(new Date(apMs(a)).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}))}${a.site?`<div class="muted" style="font-size:11px">${esc(a.site)}</div>`:""}</td><td class="r">${a.amt!=null?esc(fmtNum(a.amt))+(m.unit?" "+esc(m.unit):""):"—"}</td><td class="r">${iv!=null?fmt1(iv)+" d"+(st.hl?`<div class="muted" style="font-size:11px">${fmt1(iv*24/st.hl)} m.v.</div>`:""):"—"}</td><td class="r"><button type="button" class="link" data-appdel="${esc(a.id||a.at)}">Apagar</button></td></tr>`}).join("")}
+      ${st.avgIv?`<tr><td><b>Média</b><div class="muted" style="font-size:11px">últimos ${st.avgIv.n} intervalos</div></td><td></td><td class="r"><b>${fmt1(st.avgIv.avg)} d</b>${st.hl?`<div class="muted" style="font-size:11px">${fmt1(st.avgIv.avg*24/st.hl)} m.v.</div>`:""}</td><td></td></tr>`:""}
     </tbody></table></div></div>
     <p class="muted" style="margin:0;font-size:12px">Estimativa com a meia-vida média da molécula: absorção, local da aplicação, volume do óleo e metabolismo mudam de pessoa para pessoa. O nível real só o exame de sangue mostra.</p>
     <button type="button" class="primary" data-medact="app" data-id="${m.id}">Registrar aplicação</button></div>`);
@@ -2210,7 +2239,7 @@ function doctorQuestions(){
   if(bps.length)q.push(`Registrei pressão de ${bps.map(x=>x.sys+"/"+x.dia).join(", ")} nos últimos 30 dias. Preciso de monitoramento ou tratamento?`);
   const cnt={};sides30.filter(x=>!REDFLAGS.has(x.symptom)&&!["Pressão alta medida","Sensibilidade ou nódulo no mamilo","Dor ou redução testicular"].includes(x.symptom)).forEach(x=>{const k=x.symptom==="Outro"&&x.other?x.other:x.symptom;cnt[k]=(cnt[k]||0)+1});
   Object.entries(cnt).forEach(([k,n])=>q.push(`Tenho tido "${k.toLowerCase()}" (${n}x nos últimos 30 dias). Pode estar ligado ao tratamento? O que fazer?`));
-  act.filter(m=>pkParts(m)).forEach(m=>{const st=pkSteady(m);if(st&&st.ratio<0.5)q.push(`Com o esquema atual de ${m.name} (a cada ${fmtNum(m.every)} dias), a estimativa de meia-vida mostra o nível caindo para cerca de ${Math.round(st.ratio*100)}% do pico antes da próxima aplicação. Isso pode explicar sintomas no fim do intervalo? Vale avaliar intervalo, dose ou forma de aplicação? Devo colher o exame no vale, antes da aplicação?`);
+  act.filter(m=>pkParts(m)).forEach(m=>{const tau=pkTau(m),st=pkSteady(m,tau);if(st&&st.ratio<0.5)q.push(`Com o esquema atual de ${m.name} (a cada ${fmt1(tau)} dias${cnum(m.every)?"":", pela média das minhas aplicações"}), a estimativa de meia-vida mostra o nível caindo para cerca de ${Math.round(st.ratio*100)}% do pico antes da próxima aplicação. Isso pode explicar sintomas no fim do intervalo? Vale avaliar intervalo, dose ou forma de aplicação? Devo colher o exame no vale, antes da aplicação?`);
     const late=pkLateCount(m,60);if(late>=2)q.push(`Atrasei ${late} aplicações de ${m.name} nos últimos 60 dias. Isso afeta o tratamento? Existe um esquema mais fácil de seguir?`)});
   if(horm.length){
     const lastExam=Object.values(S.exams).map(x=>x.date).sort().pop();
