@@ -1,5 +1,5 @@
 /* Service worker do Diário ABCDEF: app offline e arquivos locais (fotos e laudos) servidos do IndexedDB. */
-const VERSION = "diario-v3";
+const VERSION = "diario-v4";
 const SHELL = ["./", "index.html", "pwa.js", "config.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"];
 const RUNTIME = [/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, /^https:\/\/cdn\.jsdelivr\.net\/npm\/@tensorflow\//, /^https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/pdf\.js\//];
 

@@ -411,6 +411,12 @@ details summary{cursor:pointer}
   @keyframes rise{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
 }
 @media (prefers-reduced-motion: reduce){.fill{transition:none}}
+/* meia-vida */
+.pk{display:grid;gap:10px;margin-top:4px;padding:14px;border-radius:12px;background:var(--raised)}
+.pk .sh2{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pk .stat{background:var(--surface)}
+.pkwarn{margin:0;font-size:14px;line-height:1.5;color:var(--danger)}
+.pkwarn.soft{color:var(--warn)}
 /* cardio e finalizar */
 .cardio{margin-top:12px;display:grid;gap:12px}
 .cardio>.sh2,.centry .sh2,.finish .sh2{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -434,6 +440,7 @@ details summary{cursor:pointer}
     <p class="tagline" id="tagline"></p>
     <span class="status" id="status" aria-live="polite">Carregando</span>
     <div id="alert"></div>
+    <div id="medalert"></div>
     <div class="rowhead">
       <h2 class="h2" id="month"></h2>
       <div class="arrows">
@@ -2078,7 +2085,7 @@ function renderFoot(){
     ?`<span>Apagar os registros desta sessão?</span><span style="display:flex;gap:8px"><button type="button" class="btn" id="clr-no">Manter</button><button type="button" class="btn solid" id="clr-yes">Apagar</button></span>`
     :`<span class="muted">${upd}</span><button type="button" class="btn danger" id="clr">Limpar sessão</button>`;
 }
-function renderHome(){renderHello();renderAlert();renderWeek();renderDaycard();renderCoachCard();renderPills();renderAdjust();renderList()}
+function renderHome(){renderHello();renderAlert();renderMedAlert();renderWeek();renderDaycard();renderCoachCard();renderPills();renderAdjust();renderList()}
 
 /* ---------- Programas ---------- */
 function poster(p,cls,extra){
@@ -2463,7 +2470,7 @@ const HORM_HTML=`<p class="lead">Conteúdo educativo sobre como hormônios e rec
  <div class="hsec card"><h3>Limite natural</h3>
   <p>Um estudo clássico com fisiculturistas (Kouri, 1995) encontrou índice de massa livre de gordura (FFMI) até cerca de 25 em não usuários. É uma referência aproximada, com exceções e evidência limitada; não serve para julgar ninguém, só para alinhar expectativas de progresso. Avançados naturais ganham devagar, ao longo de meses, e isso é normal.</p>
  </div>`;
-function evHorm(){$("#saude").innerHTML=medSectionHTML(["hormonio","medicamento"],"Meu acompanhamento médico","Hormônios e medicamentos prescritos pelo seu médico, como estão na receita.")+MED_NOTE+`<div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="flex:1 1 220px;min-width:0"><b>Exames, efeitos colaterais e perguntas ao médico</b><p class="muted" style="margin:2px 0 0">Envie laudos, veja os valores fora da referência, relate efeitos e gere o resumo para a consulta.</p></div><button type="button" class="btn light" data-gonsub="saude">Abrir</button></div>`+shareHTML()+`<div class="rowhead"><h2 class="h2">Guia educativo</h2></div>`+HORM_HTML}
+function evHorm(){$("#saude").innerHTML=medSectionHTML(["hormonio","peptideo","medicamento"],"Meu acompanhamento médico","Hormônios, peptídeos e medicamentos prescritos pelo seu médico, como estão na receita. Escolha a molécula e registre cada aplicação para acompanhar a meia-vida.")+MED_NOTE+`<div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="flex:1 1 220px;min-width:0"><b>Exames, efeitos colaterais e perguntas ao médico</b><p class="muted" style="margin:2px 0 0">Envie laudos, veja os valores fora da referência, relate efeitos e gere o resumo para a consulta.</p></div><button type="button" class="btn light" data-gonsub="saude">Abrir</button></div>`+shareHTML()+`<div class="rowhead"><h2 class="h2">Guia educativo</h2></div>`+HORM_HTML}
 /* renderNut redesenha a tela aberta (Nutrição ou Saúde): o acompanhamento médico aparece nas duas. */
 function renderNut(){
   if(currentView()==="saude")return renderHealth();
@@ -2478,7 +2485,7 @@ function renderHealth(){
 }
 
 /* ---------- Acompanhamento médico (registro do usuário) ---------- */
-const MEDCATS={suplemento:"Suplemento",medicamento:"Medicamento",hormonio:"Hormônio"};
+const MEDCATS={suplemento:"Suplemento",medicamento:"Medicamento",hormonio:"Hormônio",peptideo:"Peptídeo"};
 S.meds={};S.exams={};S.shareMeds=false;S.medDel=null;S.editMed=null;S.editExam=null;
 const medList=cats=>Object.values(S.meds).filter(m=>cats.includes(m.cat)).sort((a,b)=>(b.active?1:0)-(a.active?1:0)||a.name.localeCompare(b.name,"pt-BR"));
 const remindMeds=()=>Object.values(S.meds).filter(m=>m.active&&m.remind).sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
@@ -2490,7 +2497,174 @@ function medCard(m){
     ${m.doctor?`<p><b>Prescrito por:</b> ${esc(m.doctor)}</p>`:""}
     ${m.start||m.end?`<p><b>Período:</b> ${m.start?"desde "+fmtLong(m.start):""}${m.end?(m.start?" até ":"até ")+fmtLong(m.end):""}</p>`:""}
     ${m.notes?`<p class="muted">${esc(m.notes)}</p>`:""}
+    ${pkBlock(m)}
     <div class="dactions">${del?`<span>Excluir este registro?</span><button type="button" class="btn" data-medact="nodel" data-id="${m.id}">Manter</button><button type="button" class="btn solid" data-medact="del" data-id="${m.id}">Excluir</button>`:`<button type="button" class="btn raised" data-medact="edit" data-id="${m.id}">Editar</button><button type="button" class="btn raised" data-medact="toggle" data-id="${m.id}">${m.active?"Encerrar":"Voltar a usar"}</button><button type="button" class="btn danger" data-medact="askdel" data-id="${m.id}">Excluir</button>`}</div></div>`;
+}
+/* ---------- Meia-vida: contagem, nível estimado e previsão da próxima aplicação ----------
+   Modelo de um compartimento com absorção de primeira ordem (função de Bateman), somando as
+   aplicações registradas. Meia-vida (hl) e pico (tmax) em horas, de bulas e da literatura. */
+const HR=1,DY=24;
+const MOLS=[
+  {id:"t-cip",cat:"hormonio",name:"Cipionato de testosterona",brand:"Deposteron",route:"Intramuscular",hl:8*DY,tmax:2*DY,src:"bula do cipionato de testosterona: meia-vida de cerca de 8 dias por via intramuscular"},
+  {id:"t-ena",cat:"hormonio",name:"Enantato de testosterona",route:"Intramuscular",hl:4.5*DY,tmax:1.5*DY,src:"farmacocinética dos ésteres de testosterona: meia-vida de cerca de 4,5 dias"},
+  {id:"t-und",cat:"hormonio",name:"Undecanoato de testosterona injetável",brand:"Nebido",route:"Intramuscular",hl:33.9*DY,tmax:11*DY,src:"estudos de farmacocinética em óleo de rícino: meia-vida de cerca de 34 dias e pico em 1–2 semanas"},
+  {id:"t-prop",cat:"hormonio",name:"Propionato de testosterona",route:"Intramuscular",hl:0.8*DY,tmax:0.5*DY,src:"farmacocinética dos ésteres de testosterona: meia-vida de cerca de 0,8 dia"},
+  {id:"t-mix",cat:"hormonio",name:"Mistura de 4 ésteres de testosterona",brand:"Durateston, Sustanon 250",route:"Intramuscular",parts:[[30,0.8*DY,0.5*DY],[60,2.5*DY,1*DY],[60,4*DY,1.5*DY],[100,7.5*DY,2*DY]],src:"estimativa somando os 4 ésteres (propionato, fenilpropionato, isocaproato e decanoato); a bula não traz meia-vida por éster e cita ação de cerca de 3 semanas, então trate a curva como aproximada"},
+  {id:"nand",cat:"hormonio",name:"Decanoato de nandrolona",brand:"Deca-Durabolin",route:"Intramuscular",hl:9*DY,tmax:1.5*DY,src:"literatura: meia-vida de 6 a 12 dias, pico em 24–48 h; o app usa 9 dias"},
+  {id:"oxa",cat:"hormonio",name:"Oxandrolona",route:"Oral",hl:10*HR,tmax:1*HR,src:"bula: meia-vida de cerca de 9 a 10 horas"},
+  {id:"hcg",cat:"hormonio",name:"Gonadotrofina coriônica (hCG)",route:"Subcutânea",hl:29*HR,tmax:24*HR,src:"bula da coriogonadotropina alfa: meia-vida terminal de 29 ± 6 horas, pico em 12–24 h"},
+  {id:"gh",cat:"peptideo",name:"Somatropina (GH)",route:"Subcutânea",hl:3*HR,tmax:5*HR,src:"bulas de somatropina: meia-vida de poucas horas por via subcutânea (varia entre marcas; o app usa 3 h)"},
+  {id:"sema",cat:"peptideo",name:"Semaglutida",brand:"Ozempic, Wegovy",route:"Subcutânea",hl:7*DY,tmax:2*DY,src:"bula: meia-vida de cerca de 1 semana, pico em 1 a 3 dias"},
+  {id:"tirz",cat:"peptideo",name:"Tirzepatida",brand:"Mounjaro",route:"Subcutânea",hl:5*DY,tmax:1*DY,src:"bula: meia-vida de cerca de 5 dias, pico em 8–72 h"},
+  {id:"lira",cat:"peptideo",name:"Liraglutida",brand:"Victoza, Saxenda",route:"Subcutânea",hl:13*HR,tmax:12*HR,src:"bula: meia-vida de cerca de 13 horas, pico em cerca de 12 h"},
+  {id:"anas",cat:"medicamento",name:"Anastrozol",route:"Oral",hl:50*HR,tmax:2*HR,src:"bula: meia-vida de 40 a 50 horas"},
+  {id:"letr",cat:"medicamento",name:"Letrozol",route:"Oral",hl:2*DY,tmax:1*HR,src:"bula: meia-vida de cerca de 2 dias"},
+  {id:"tamo",cat:"medicamento",name:"Tamoxifeno",route:"Oral",hl:6*DY,tmax:5*HR,src:"bula: meia-vida de 5 a 7 dias"},
+  {id:"cabe",cat:"medicamento",name:"Cabergolina",route:"Oral",hl:65*HR,tmax:2.5*HR,src:"bula: meia-vida de 63 a 69 horas"},
+  {id:"clom",cat:"medicamento",name:"Clomifeno",route:"Oral",hl:5*DY,tmax:6*HR,src:"bula: meia-vida de cerca de 5 dias"},
+  {id:"outro",cat:"",name:"Outra molécula (informar a meia-vida)",src:"meia-vida informada por você, da bula ou do médico"}
+];
+const MOLMAP=Object.fromEntries(MOLS.map(x=>[x.id,x]));
+function molOptions(cur){
+  const g=(label,cat)=>`<optgroup label="${label}">${MOLS.filter(x=>x.cat===cat).map(x=>`<option value="${x.id}"${x.id===cur?" selected":""}>${esc(x.name)}${x.brand?" ("+esc(x.brand)+")":""}</option>`).join("")}</optgroup>`;
+  return`<option value="">Sem contagem de meia-vida</option>${g("Hormônios","hormonio")}${g("Peptídeos","peptideo")}${g("Medicamentos do acompanhamento","medicamento")}<option value="outro"${cur==="outro"?" selected":""}>Outra molécula (informar a meia-vida)</option>`;
+}
+const hlText=h=>h>=48?fmtNum(Math.round(h/24*10)/10)+" dias":fmtNum(Math.round(h*10)/10)+" horas";
+function kaFor(ke,tmax){
+  if(!(tmax>0))return ke*60;
+  if(tmax>=0.98/ke)return ke*1.02;
+  let lo=ke*1.0001,hi=ke*1e5;
+  for(let i=0;i<90;i++){const mid=Math.sqrt(lo*hi),t=Math.log(mid/ke)/(mid-ke);if(t>tmax)lo=mid;else hi=mid}
+  return Math.sqrt(lo*hi);
+}
+function pkParts(m){
+  if(!m||!m.mol)return null;const mol=MOLMAP[m.mol];if(!mol)return null;
+  let parts;
+  if(mol.id==="outro"){const hl=cnum(m.hl);if(!hl)return null;const h=hl*(m.hlu==="h"?1:24);parts=[[1,h,cnum(m.tmaxh)!=null?m.tmaxh:Math.min(h/4,48)]]}
+  else if(mol.parts){const tot=mol.parts.reduce((a,p)=>a+p[0],0);parts=mol.parts.map(([w,h,t])=>[w/tot,h,t])}
+  else parts=[[1,mol.hl,mol.tmax]];
+  return parts.map(([w,h,t])=>{const ke=Math.LN2/h;return{w,h,ke,ka:kaFor(ke,t)}});
+}
+function unitLevel(parts,dt){if(dt<=0)return 0;let c=0;for(const p of parts)c+=p.w*p.ka/(p.ka-p.ke)*(Math.exp(-p.ke*dt)-Math.exp(-p.ka*dt));return c}
+const apMs=a=>Date.parse(a.at);
+const pkApps=m=>(m.apps||[]).filter(a=>isFinite(apMs(a))).sort((a,b)=>apMs(a)-apMs(b));
+function pkLevelAt(parts,apps,t,def){let c=0;for(const a of apps){const dt=(t-apMs(a))/3600000;if(dt>0)c+=(cnum(a.amt)||def||1)*unitLevel(parts,dt)}return c}
+function pkPeakAfter(parts,apps,from,to,def){let mx=0;const n=120;for(let i=0;i<=n;i++){const t=from+(to-from)*i/n;mx=Math.max(mx,pkLevelAt(parts,apps,t,def))}return mx}
+function pkSteady(m){
+  const parts=pkParts(m),tau=cnum(m.every);if(!parts||!tau)return null;
+  const T=tau*24,hlMax=Math.max(...parts.map(p=>p.h)),n=Math.min(300,Math.ceil(6*hlMax/T)+3),apps=[];
+  for(let i=0;i<n;i++)apps.push({at:new Date(i*T*3600000).toISOString(),amt:1});
+  const start=(n-1)*T*3600000,end=start+T*3600000;let mx=0,mn=Infinity;
+  for(let i=0;i<=160;i++){const t=start+(end-start)*i/160,v=pkLevelAt(parts,apps,t,1);mx=Math.max(mx,v);if(i>0)mn=Math.min(mn,v)}
+  return{peak:mx,trough:mn,ratio:mx?mn/mx:1};
+}
+function pkLateCount(m,days){
+  const apps=pkApps(m),tau=cnum(m.every);if(!tau||apps.length<2)return 0;const since=Date.now()-days*864e5;let n=0;
+  for(let i=1;i<apps.length;i++){if(apMs(apps[i])<since)continue;if(apMs(apps[i])-apMs(apps[i-1])>tau*864e5*1.15+6*36e5)n++}
+  return n;
+}
+const dtText=ms=>{const h=Math.abs(ms)/36e5;if(h<1)return Math.max(1,Math.round(h*60))+" min";if(h<48){const H=Math.floor(h),M=Math.round((h-H)*60);return H+" h"+(M&&H<10?" "+M+" min":"")}const d=Math.floor(h/24),r=Math.round(h-d*24);return d+" dia"+(d>1?"s":"")+(r?" e "+r+" h":"")};
+const dtShort=ms=>{const h=Math.abs(ms)/36e5;if(h<1)return Math.max(1,Math.round(h*60))+" min";if(h<48)return Math.round(h)+" h";const d=Math.floor(h/24),r=Math.round(h-d*24);return d+"d"+(r?" "+r+"h":"")};
+const whenTxt=ms=>new Date(ms).toLocaleString("pt-BR",{weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+function pkStatus(m){
+  const parts=pkParts(m);if(!parts)return null;
+  const mol=MOLMAP[m.mol],hl=mol.id==="outro"?parts[0].h:(mol.parts?null:mol.hl),apps=pkApps(m),now=Date.now(),def=cnum(m.amt)||1;
+  const hlTxt=mol.parts?"mistura de ésteres":hlText(hl);
+  const st={parts,hlTxt,mol,apps,src:mol.src};
+  if(!apps.length)return st;
+  const last=apps[apps.length-1],lm=apMs(last);st.last=last;st.lastTxt=whenTxt(lm);st.since=now-lm;
+  st.hls=hl?st.since/36e5/hl:null;
+  const peak=pkPeakAfter(parts,apps,lm,Math.max(lm+1,Math.min(now,lm+ (cnum(m.every)||30)*864e5)),def)||pkLevelAt(parts,apps,now,def);
+  const lv=pkLevelAt(parts,apps,now,def),lv24=pkLevelAt(parts,apps,now+864e5,def);
+  st.nowPct=peak?Math.round(lv/peak*100):0;st.dropDay=lv?Math.max(0,Math.round((lv-lv24)/lv*100)):0;
+  const tau=cnum(m.every);
+  if(tau){const due=lm+tau*864e5;st.due=due;st.dueTxt=whenTxt(due);st.toDue=due-now;
+    st.state=st.toDue<0?"late":st.toDue<=864e5?"soon":"ok";
+    const at=pkLevelAt(parts,apps,due,def);st.duePct=peak?Math.round(at/peak*100):0}
+  else st.state=st.nowPct<50&&st.since>36e5*6?"low":"ok";
+  return st;
+}
+function pkBlock(m){
+  if(!m.active)return"";const st=pkStatus(m);if(!st)return"";
+  const btns=`<div class="dactions" style="margin:0"><button type="button" class="btn light" data-medact="app" data-id="${m.id}">Registrar aplicação</button>${st.apps.length?`<button type="button" class="btn raised" data-medact="curve" data-id="${m.id}">Curva e histórico</button>`:""}</div>`;
+  if(!st.last)return`<div class="pk"><p class="muted" style="margin:0">Meia-vida considerada: <b>${esc(st.hlTxt)}</b>. Registre a primeira aplicação para começar a contagem.</p>${btns}</div>`;
+  const chip=st.state==="late"?`<span class="chip t-bad">Atrasada há ${dtText(-st.toDue)}</span>`:st.state==="soon"?`<span class="chip t-late">Próxima em ${dtText(st.toDue)}</span>`:st.state==="low"?`<span class="chip t-late">Nível estimado abaixo de 50%</span>`:st.due?`<span class="chip t-ok">Próxima em ${dtText(st.toDue)}</span>`:"";
+  const warn=st.state==="late"?`<p class="pkwarn">O nível estimado está em <b>${st.nowPct}% do pico</b> e cai cerca de ${st.dropDay}% por dia sem a próxima aplicação. Siga o horário combinado com o seu médico; não compense com dose maior por conta própria.</p>`
+    :st.state==="soon"?`<p class="pkwarn soft">A próxima aplicação prevista pela receita é ${esc(st.dueTxt)}. Aplicar no horário evita que o nível estimado caia além de ${st.duePct}% do pico.</p>`
+    :st.state==="low"?`<p class="pkwarn soft">O nível estimado já caiu para ${st.nowPct}% do pico. Informe o intervalo da receita no cadastro para o app prever a próxima aplicação.</p>`:"";
+  return`<div class="pk"><div class="sh2"><b>Meia-vida</b>${chip}</div>
+    <div class="stats"><div class="stat"><div class="k">Desde a última</div><div class="v">${dtShort(st.since)}</div><div class="muted" style="font-size:12px">${st.hls!=null?fmtNum(Math.round(st.hls*10)/10)+" meia-vida"+(st.hls>=2?"s":""):esc(st.hlTxt)}</div></div>
+      <div class="stat"><div class="k">Nível estimado</div><div class="v">${st.nowPct}<small>%</small></div><div class="muted" style="font-size:12px">do pico · −${st.dropDay}%/dia</div></div>
+      <div class="stat"><div class="k">Próxima</div><div class="v">${st.due?esc(new Date(st.due).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})):"—"}</div><div class="muted" style="font-size:12px">${st.due?"vale ≈ "+st.duePct+"%":"sem intervalo"}</div></div></div>
+    ${warn}${btns}</div>`;
+}
+function renderMedAlert(){
+  const el=$("#medalert");if(!el)return;
+  const items=Object.values(S.meds).filter(m=>m.active).map(m=>[m,pkStatus(m)]).filter(([m,st])=>st&&st.last&&(st.state==="late"||st.state==="soon"));
+  if(!items.length){el.innerHTML="";return}
+  el.innerHTML=items.map(([m,st])=>`<div class="alert"${st.state==="soon"?' style="background:var(--surface)"':""}><h3${st.state==="soon"?' style="color:var(--ink)"':""}>${st.state==="late"?"Aplicação atrasada":"Aplicação próxima"}: ${esc(m.name)}</h3>
+    <p>${st.state==="late"?`Prevista pela receita para ${esc(st.dueTxt)}. Nível estimado agora: ${st.nowPct}% do pico, caindo cerca de ${st.dropDay}% por dia.`:`Prevista pela receita para ${esc(st.dueTxt)} (em ${dtText(st.toDue)}).`}</p>
+    <div class="acts"><button type="button" class="btn light" data-medact="app" data-id="${m.id}">Registrar aplicação</button><button type="button" class="btn raised" data-medact="curve" data-id="${m.id}">Ver curva</button></div></div>`).join("");
+}
+const localInput=ms=>{const d=new Date(ms),p=n=>String(n).padStart(2,"0");return`${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
+function openAppForm(m){
+  S.sheetMode="app";S.appMed=m.id;
+  openSheet("Registrar aplicação",`<form class="form" id="app-form"><p class="muted" style="margin:0">${esc(m.name)}${m.dose?" · "+esc(m.dose):""}</p>
+    <div class="fgrid"><div class="field"><label for="ap-at">Data e hora</label><input type="datetime-local" id="ap-at" value="${localInput(Date.now())}" required></div>
+    <div class="field"><label for="ap-amt">Quantidade${m.unit?" ("+esc(m.unit)+")":""}</label><input type="text" inputmode="decimal" id="ap-amt" value="${m.amt!=null?esc(fmtNum(m.amt)):""}" placeholder="Como na receita"></div>
+    <div class="field"><label for="ap-site">Local (opcional)</label><input type="text" id="ap-site" placeholder="Ex.: glúteo direito"></div></div>
+    <p class="muted" style="margin:0;font-size:13px">Registre o que foi aplicado, como na receita. A quantidade entra só no cálculo da curva estimada.</p>
+    <p class="err" id="ap-err"></p><button type="submit" class="primary">Salvar aplicação</button></form>`);
+}
+async function saveMedData(m){if(S.store)await S.store.set("m-"+m.id,{kind:"med",data:m,updatedAt:new Date().toISOString()});S.meds[m.id]=m}
+async function saveApp(){
+  const m=S.meds[S.appMed];if(!m)return;const at=$("#ap-at").value,t=Date.parse(at);
+  if(!at||!isFinite(t)){$("#ap-err").textContent="Informe a data e a hora.";return}
+  if(t>Date.now()+36e5){$("#ap-err").textContent="A data está no futuro. Registre a aplicação depois de feita.";return}
+  const x=parseFloat($("#ap-amt").value.replace(",","."));
+  const n=Object.assign({},m,{apps:[...(m.apps||[]),{id:uid(),at:new Date(t).toISOString(),amt:isFinite(x)&&x>0?x:null,site:$("#ap-site").value.trim()}]});
+  try{await saveMedData(n)}catch(e){$("#ap-err").textContent="Não foi possível salvar.";return}
+  closeSheet();renderMedAlert();if(currentView()==="saude")renderHealth();toast("Aplicação registrada");
+}
+function pkChart(m,st){
+  const def=cnum(m.amt)||1,now=Date.now(),tau=cnum(m.every),apps=st.apps;
+  const span=Math.max(14,tau?tau*3:14)*864e5,from=Math.max(apMs(apps[0])-864e5,now-span*1.6),to=now+span;
+  const proj=[...apps];if(tau){let next=Math.max(apMs(apps[apps.length-1])+tau*864e5,now);while(next<to){proj.push({at:new Date(next).toISOString(),amt:def,f:1});next+=tau*864e5}}
+  const N=220,pts=[];let mx=0;for(let i=0;i<=N;i++){const t=from+(to-from)*i/N,v=pkLevelAt(st.parts,t<=now?apps:proj,t,def);pts.push([t,v]);mx=Math.max(mx,v)}
+  const W=340,H=170,pl=6,pr=6,pt=12,pb=24,x=t=>pl+(t-from)/(to-from)*(W-pl-pr),y=v=>pt+(1-v/(mx||1))*(H-pt-pb);
+  const past=pts.filter(p=>p[0]<=now),fut=pts.filter(p=>p[0]>=now);
+  const line=a=>a.map((p,i)=>(i?"L":"M")+x(p[0]).toFixed(1)+" "+y(p[1]).toFixed(1)).join(" ");
+  const area=past.length?line(past)+` L${x(past[past.length-1][0]).toFixed(1)} ${H-pb} L${x(past[0][0]).toFixed(1)} ${H-pb} Z`:"";
+  const ticks=[];for(let t=from;t<=to;t+=Math.max(1,Math.round((to-from)/864e5/6))*864e5)ticks.push(t);
+  const peakLast=st.nowPct&&mx?pkLevelAt(st.parts,apps,now,def)/(st.nowPct/100):mx,half=y(peakLast*0.5);
+  return`<svg class="cbars" viewBox="0 0 ${W} ${H}" role="img" aria-label="Nível estimado de ${esc(m.name)} ao longo do tempo">
+    <path d="${area}" fill="var(--ok)" opacity=".16"/><path d="${line(past)}" fill="none" stroke="var(--ok)" stroke-width="2"/>
+    <path d="${line(fut)}" fill="none" stroke="var(--soft)" stroke-width="2" stroke-dasharray="5 4"/>
+    <line x1="${pl}" x2="${W-pr}" y1="${half.toFixed(1)}" y2="${half.toFixed(1)}" stroke="var(--warn)" stroke-dasharray="3 4" opacity=".8"/><text x="${W-pr}" y="${(half-4).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--warn)">50% do pico</text>
+    <line x1="${x(now).toFixed(1)}" x2="${x(now).toFixed(1)}" y1="${pt}" y2="${H-pb}" stroke="var(--ink)" stroke-width="1"/><text x="${(x(now)+3).toFixed(1)}" y="${pt+8}" font-size="10" fill="var(--ink)">agora</text>
+    ${proj.map(a=>`<circle cx="${x(apMs(a)).toFixed(1)}" cy="${H-pb}" r="3.5" fill="${a.f?"none":"var(--ok)"}" stroke="${a.f?"var(--soft)":"var(--ok)"}"/>`).join("")}
+    ${ticks.map(t=>`<text x="${x(t).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="9" fill="var(--muted)">${new Date(t).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}</text>`).join("")}
+  </svg>`;
+}
+function openPkSheet(m){
+  const st=pkStatus(m);if(!st||!st.last){openAppForm(m);return}
+  S.sheetMode="pk";S.appMed=m.id;const ss=pkSteady(m),apps=[...st.apps].reverse();
+  openSheet(m.name,`<div style="display:grid;gap:14px">
+    <p class="muted" style="margin:0">Meia-vida considerada: <b>${esc(st.hlTxt)}</b>. Fonte: ${esc(st.src)}.</p>
+    <div class="card" style="padding:14px">${pkChart(m,st)}<p class="muted" style="margin:6px 0 0;font-size:12px">Linha cheia: estimativa a partir das aplicações registradas. Tracejada: projeção se as próximas forem feitas nos dias da receita. Pontos: aplicações.</p></div>
+    <div class="stats"><div class="stat"><div class="k">Agora</div><div class="v">${st.nowPct}<small>%</small></div></div><div class="stat"><div class="k">Em 24 h</div><div class="v">−${st.dropDay}<small>%</small></div></div><div class="stat"><div class="k">${st.state==="late"?"Na data prevista":"Vale previsto"}</div><div class="v">${st.due?st.duePct+"<small>%</small>":"—"}</div></div></div>
+    ${ss?`<p style="margin:0">Com o intervalo da receita (a cada ${fmtNum(m.every)} dias), quando o nível estabiliza ele varia de 100% no pico até cerca de <b>${Math.round(ss.ratio*100)}%</b> antes da próxima aplicação.</p>`:""}
+    ${ss&&ss.ratio<0.5?`<div class="note-box">A curva estimada cai para menos da metade do pico antes de cada aplicação. Se você sente cansaço, queda de libido ou de humor perto da data, leve esta curva ao seu médico: ele pode avaliar intervalo, dose ou forma de aplicação, e pedir o exame no vale (logo antes da aplicação). Não mude o esquema por conta própria.</div>`:""}
+    <div><h3 style="margin:0 0 8px;font-size:17px">Aplicações</h3><div class="tblwrap card tblcard"><table class="ctable"><thead><tr><th>Data</th><th class="r">Qtd.</th><th>Local</th><th></th></tr></thead><tbody>
+      ${apps.slice(0,40).map(a=>`<tr><td>${esc(whenTxt(apMs(a)))}</td><td class="r">${a.amt!=null?esc(fmtNum(a.amt))+(m.unit?" "+esc(m.unit):""):"—"}</td><td>${esc(a.site||"")}</td><td><button type="button" class="link" data-appdel="${esc(a.id||a.at)}">Apagar</button></td></tr>`).join("")}
+    </tbody></table></div></div>
+    <p class="muted" style="margin:0;font-size:12px">Estimativa com a meia-vida média da molécula: absorção, local da aplicação, volume do óleo e metabolismo mudam de pessoa para pessoa. O nível real só o exame de sangue mostra.</p>
+    <button type="button" class="primary" data-medact="app" data-id="${m.id}">Registrar aplicação</button></div>`);
+}
+async function delApp(key){
+  const m=S.meds[S.appMed];if(!m)return;const n=Object.assign({},m,{apps:(m.apps||[]).filter(a=>(a.id||a.at)!==key)});
+  try{await saveMedData(n)}catch(e){toast("Não foi possível salvar");return}
+  renderMedAlert();if(currentView()==="saude")renderHealth();openPkSheet(n);
 }
 function medSectionHTML(cats,title,intro){
   const list=medList(cats);
@@ -2501,7 +2675,7 @@ function medSectionHTML(cats,title,intro){
 function shareHTML(){
   return`<div class="card" style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div style="min-width:0;flex:1 1 220px"><b>Mostrar ao treinador</b><p class="muted" style="margin:2px 0 0">${S.shareMeds?"O treinador do Início vê este acompanhamento ao responder. Ele não altera nem sugere doses.":"Desligado: o treinador do Início não vê nada desta seção."}</p></div><button type="button" class="btn ${S.shareMeds?"light":"raised"}" data-share="1" aria-pressed="${S.shareMeds}">${S.shareMeds?"Ligado":"Desligado"}</button></div>`;
 }
-const MED_NOTE=`<div class="note-box" style="margin-top:12px">Registre exatamente o que está na receita. O app não sugere, calcula nem ajusta doses; qualquer mudança deve ser feita com quem prescreveu. Os registros ficam na sua área privada deste app.</div>`;
+const MED_NOTE=`<div class="note-box" style="margin-top:12px">Registre exatamente o que está na receita. O app não sugere nem ajusta doses ou intervalos: a contagem de meia-vida e a curva são estimativas a partir do que você registra, com a meia-vida média de cada molécula, e não substituem o exame de sangue. Qualquer mudança deve ser feita com quem prescreveu. Os registros ficam na sua área privada deste app.</div>`;
 function openMedForm(m,cat){
   const x=m||{cat:cat||"suplemento",name:"",dose:"",route:"",doctor:"",start:todayISO(),end:"",notes:"",remind:true,active:true};
   S.editMed=m?m.id:null;S.sheetMode="med";
@@ -2509,6 +2683,20 @@ function openMedForm(m,cat){
     <div class="field"><label for="md-name">Nome</label><input type="text" id="md-name" value="${esc(x.name)}" required placeholder="Como aparece na receita"></div>
     <div class="fgrid"><div class="field"><label for="md-cat">Categoria</label><select id="md-cat">${Object.entries(MEDCATS).map(([k,n])=>`<option value="${k}"${x.cat===k?" selected":""}>${n}</option>`).join("")}</select></div>
     <div class="field"><label for="md-route">Via (opcional)</label><input type="text" id="md-route" value="${esc(x.route||"")}" placeholder="Oral, tópica…"></div></div>
+    <div id="md-pk"${x.cat==="suplemento"?" hidden":""} style="display:grid;gap:14px">
+      <div class="field"><label for="md-mol">Molécula (para a contagem de meia-vida)</label><select id="md-mol">${molOptions(x.mol)}</select></div>
+      <div id="md-custom" class="fgrid"${x.mol==="outro"?"":" hidden"}>
+        <div class="field"><label for="md-hl">Meia-vida (da bula ou do médico)</label><input type="text" inputmode="decimal" id="md-hl" value="${x.hl!=null?esc(fmtNum(x.hl)):""}"></div>
+        <div class="field"><label for="md-hlu">Unidade</label><select id="md-hlu"><option value="d"${x.hlu!=="h"?" selected":""}>dias</option><option value="h"${x.hlu==="h"?" selected":""}>horas</option></select></div>
+        <div class="field"><label for="md-tmax">Pico após a aplicação (horas, opcional)</label><input type="text" inputmode="decimal" id="md-tmax" value="${x.tmaxh!=null?esc(fmtNum(x.tmaxh)):""}"></div>
+      </div>
+      <div class="fgrid">
+        <div class="field"><label for="md-amt">Quantidade por aplicação</label><input type="text" inputmode="decimal" id="md-amt" value="${x.amt!=null?esc(fmtNum(x.amt)):""}" placeholder="Ex.: 100"></div>
+        <div class="field"><label for="md-unit">Unidade</label><input type="text" id="md-unit" value="${esc(x.unit||"")}" placeholder="mg, mL, UI, mcg"></div>
+        <div class="field"><label for="md-every">Intervalo da receita (dias)</label><input type="text" inputmode="decimal" id="md-every" value="${x.every!=null?esc(fmtNum(x.every)):""}" placeholder="Ex.: 7"></div>
+      </div>
+      <p class="muted" style="margin:-6px 0 0;font-size:13px">O intervalo serve só para prever a próxima aplicação e avisar antes que o nível estimado caia demais. Copie da receita; o app não sugere intervalo.</p>
+    </div>
     <div class="field"><label for="md-dose">Dose e frequência, como na receita</label><textarea id="md-dose" required placeholder="Copie da prescrição">${esc(x.dose)}</textarea></div>
     <div class="field"><label for="md-doctor">Prescrito por (opcional)</label><input type="text" id="md-doctor" value="${esc(x.doctor||"")}" placeholder="Nome e especialidade"></div>
     <div class="fgrid"><div class="field"><label for="md-start">Início</label><input type="date" id="md-start" value="${esc(x.start||"")}"></div><div class="field"><label for="md-end">Término (opcional)</label><input type="date" id="md-end" value="${esc(x.end||"")}"></div></div>
@@ -2521,13 +2709,19 @@ async function saveMed(){
   const v=id=>$("#"+id).value.trim(),name=v("md-name"),dose=v("md-dose");
   if(!name||!dose){$("#md-err").textContent="Preencha o nome e a dose como está na receita.";return}
   const id=S.editMed||uid(),old=S.meds[id]||{active:true};
-  const m={id,cat:$("#md-cat").value,name,dose,route:v("md-route"),doctor:v("md-doctor"),start:$("#md-start").value,end:$("#md-end").value,notes:v("md-notes"),remind:$("#md-remind").checked,active:old.active!==false};
+  const num=id=>{const x=parseFloat(v(id).replace(",","."));return isFinite(x)&&x>0?x:null};
+  const cat=$("#md-cat").value,mol=cat==="suplemento"?"":$("#md-mol").value;
+  if(mol==="outro"&&!num("md-hl")){$("#md-err").textContent="Informe a meia-vida da molécula, como está na bula ou como o médico orientou.";return}
+  const m={id,cat,name,dose,route:v("md-route"),doctor:v("md-doctor"),start:$("#md-start").value,end:$("#md-end").value,notes:v("md-notes"),remind:$("#md-remind").checked,active:old.active!==false,
+    mol,hl:mol==="outro"?num("md-hl"):null,hlu:$("#md-hlu")?$("#md-hlu").value:"d",tmaxh:mol==="outro"?num("md-tmax"):null,amt:mol?num("md-amt"):null,unit:mol?v("md-unit"):"",every:mol?num("md-every"):null,apps:old.apps||[]};
   try{if(S.store)await S.store.set("m-"+id,{kind:"med",data:m,updatedAt:new Date().toISOString()})}catch(e){$("#md-err").textContent=e&&e.code==="quota_exceeded"?"Armazenamento cheio.":"Não foi possível salvar.";return}
-  S.meds[id]=m;closeSheet();renderNut();toast("Registro salvo");
+  S.meds[id]=m;closeSheet();renderNut();renderMedAlert();toast("Registro salvo");
 }
 async function medAction(act,id){
   const m=S.meds[id];if(!m)return;
   if(act==="edit"){openMedForm(m);return}
+  if(act==="app"){openAppForm(m);return}
+  if(act==="curve"){openPkSheet(m);return}
   if(act==="askdel"){S.medDel=id;renderNut();return}
   if(act==="nodel"){S.medDel=null;renderNut();return}
   try{
@@ -2613,6 +2807,8 @@ function doctorQuestions(){
   if(bps.length)q.push(`Registrei pressão de ${bps.map(x=>x.sys+"/"+x.dia).join(", ")} nos últimos 30 dias. Preciso de monitoramento ou tratamento?`);
   const cnt={};sides30.filter(x=>!REDFLAGS.has(x.symptom)&&!["Pressão alta medida","Sensibilidade ou nódulo no mamilo","Dor ou redução testicular"].includes(x.symptom)).forEach(x=>{const k=x.symptom==="Outro"&&x.other?x.other:x.symptom;cnt[k]=(cnt[k]||0)+1});
   Object.entries(cnt).forEach(([k,n])=>q.push(`Tenho tido "${k.toLowerCase()}" (${n}x nos últimos 30 dias). Pode estar ligado ao tratamento? O que fazer?`));
+  act.filter(m=>pkParts(m)).forEach(m=>{const st=pkSteady(m);if(st&&st.ratio<0.5)q.push(`Com o esquema atual de ${m.name} (a cada ${fmtNum(m.every)} dias), a estimativa de meia-vida mostra o nível caindo para cerca de ${Math.round(st.ratio*100)}% do pico antes da próxima aplicação. Isso pode explicar sintomas no fim do intervalo? Vale avaliar intervalo, dose ou forma de aplicação? Devo colher o exame no vale, antes da aplicação?`);
+    const late=pkLateCount(m,60);if(late>=2)q.push(`Atrasei ${late} aplicações de ${m.name} nos últimos 60 dias. Isso afeta o tratamento? Existe um esquema mais fácil de seguir?`)});
   if(horm.length){
     const lastExam=Object.values(S.exams).map(x=>x.date).sort().pop();
     if(!lastExam||lastExam<addDays(todayISO(),-180))q.push("Não faço exames há mais de 6 meses durante o tratamento. Quando devemos repetir e quais?");
@@ -2625,7 +2821,7 @@ function doctorQuestions(){
 function doctorReport(){
   const L=[],act=Object.values(S.meds).filter(m=>m.active);
   L.push("RESUMO PARA A CONSULTA — Diário ABCDEF",`Gerado em ${parse(todayISO()).toLocaleDateString("pt-BR",{day:"numeric",month:"long",year:"numeric"})}`,"");
-  L.push("EM USO (como prescrito)");act.length?act.forEach(m=>L.push(`- ${m.name} (${MEDCATS[m.cat]}): ${m.dose}${m.doctor?" — "+m.doctor:""}${m.start?" — desde "+fmtShort(m.start):""}`)):L.push("- Nada registrado");L.push("");
+  L.push("EM USO (como prescrito)");act.length?act.forEach(m=>{L.push(`- ${m.name} (${MEDCATS[m.cat]}): ${m.dose}${m.doctor?" — "+m.doctor:""}${m.start?" — desde "+fmtShort(m.start):""}`);const pk=pkStatus(m);if(pk&&pk.last)L.push(`  Última aplicação: ${pk.lastTxt}${pk.due?"; próxima pela receita: "+pk.dueTxt:""}; nível estimado agora: ${pk.nowPct}% do pico (meia-vida considerada: ${pk.hlTxt}).`)}):L.push("- Nada registrado");L.push("");
   const ms=markers();L.push("EXAMES — último valor de cada marcador");
   ms.length?ms.forEach(m=>{const p=m.pts[m.pts.length-1];L.push(`- ${p.r.name}: ${p.r.value} ${p.r.unit||""} (${FLAGL[p.f.st][0]}; ref ${refTxt(p.f)}${p.f.src==="geral"?" geral":""}) em ${fmtShort(p.date)}${m.pts.length>1?`; antes ${m.pts[m.pts.length-2].r.value}`:""}`)}):L.push("- Nenhum exame com valores registrados");L.push("");
   const s30=Object.values(S.sides).filter(x=>x.date>=addDays(todayISO(),-30)).sort((a,b)=>a.date<b.date?-1:1);
@@ -3254,8 +3450,19 @@ $("#sheet-body").addEventListener("click",e=>{
   const xd=e.target.closest("[data-examdel]");
   if(xd&&S.sheetMode==="exam"){const id=xd.dataset.examdel;(async()=>{try{if(S.store)await S.store.del("x-"+id);delete S.exams[id];closeSheet();renderNut()}catch(err){toast("Não foi possível excluir")}})()}
 });
+$("#sheet-body").addEventListener("click",e=>{
+  if(S.sheetMode==="pk"){const ad=e.target.closest("[data-appdel]");if(ad){delApp(ad.dataset.appdel);return}}
+  const ma=e.target.closest("[data-medact]");if(ma&&(S.sheetMode==="pk"||S.sheetMode==="app")){closeSheet();medAction(ma.dataset.medact,ma.dataset.id)}
+});
+$("#sheet-body").addEventListener("change",e=>{
+  if(e.target.id==="md-cat"){const pk=$("#md-pk");if(pk)pk.hidden=e.target.value==="suplemento"}
+  if(e.target.id==="md-mol"){const c=$("#md-custom");if(c)c.hidden=e.target.value!=="outro";const mol=MOLMAP[e.target.value],nm=$("#md-name"),rt=$("#md-route");
+    if(mol&&mol.id!=="outro"){if(nm&&!nm.value.trim())nm.value=mol.name+(mol.brand?" ("+mol.brand.split(",")[0]+")":"");if(rt&&!rt.value.trim())rt.value=mol.route;const ct=$("#md-cat");if(ct&&mol.cat&&ct.value!==mol.cat)ct.value=mol.cat}}
+});
+$("#medalert").addEventListener("click",e=>{const ma=e.target.closest("[data-medact]");if(ma)medAction(ma.dataset.medact,ma.dataset.id)});
 $("#sheet-body").addEventListener("submit",e=>{
   if(e.target.id==="med-form"){e.preventDefault();saveMed();return}
+  if(e.target.id==="app-form"){e.preventDefault();saveApp();return}
   if(e.target.id==="lim-form"){e.preventDefault();S.limits=[...e.target.querySelectorAll('input[name="lim"]:checked')].map(i=>i.value);saveSettings();closeSheet();renderHome();renderView(currentView());toast(S.limits.length?"Limitações salvas":"Limitações removidas");return}
   if(e.target.id==="rec-form"){e.preventDefault();runRecommend();return}
   if(e.target.id==="exam-form"){e.preventDefault();saveExamDraft();return}
